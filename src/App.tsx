@@ -4,8 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import IncomeStatement from "./pages/IncomeStatement";
 import IncomeSources from "./pages/IncomeSources";
 import RecurringExpenses from "./pages/RecurringExpenses";
@@ -22,27 +25,68 @@ const queryClient = new QueryClient();
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
   <QueryClientProvider client={queryClient}>
+    <AuthProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/income-statement" element={<IncomeStatement />} />
-            <Route path="/income-sources" element={<IncomeSources />} />
-            <Route path="/recurring-expenses" element={<RecurringExpenses />} />
-            <Route path="/bills-calendar" element={<BillsCalendar />} />
-            <Route path="/financial-goals" element={<FinancialGoals />} />
-            <Route path="/balance-sheet" element={<BalanceSheet />} />
-            <Route path="/cash-flow-statement" element={<CashFlowStatement />} />
-            <Route path="/installments" element={<Installments />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <AppLayout><Index /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/income-statement" element={
+            <ProtectedRoute>
+              <AppLayout><IncomeStatement /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/income-sources" element={
+            <ProtectedRoute>
+              <AppLayout><IncomeSources /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/recurring-expenses" element={
+            <ProtectedRoute>
+              <AppLayout><RecurringExpenses /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/bills-calendar" element={
+            <ProtectedRoute>
+              <AppLayout><BillsCalendar /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/financial-goals" element={
+            <ProtectedRoute>
+              <AppLayout><FinancialGoals /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/balance-sheet" element={
+            <ProtectedRoute>
+              <AppLayout><BalanceSheet /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/cash-flow-statement" element={
+            <ProtectedRoute>
+              <AppLayout><CashFlowStatement /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/installments" element={
+            <ProtectedRoute>
+              <AppLayout><Installments /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/portfolio" element={
+            <ProtectedRoute>
+              <AppLayout><Portfolio /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
   </ThemeProvider>
 );
