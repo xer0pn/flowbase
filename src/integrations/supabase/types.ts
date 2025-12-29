@@ -406,6 +406,7 @@ export type Database = {
           description: string | null
           id: string
           installment_id: string | null
+          receipt_url: string | null
           type: string
           user_id: string
         }
@@ -419,6 +420,7 @@ export type Database = {
           description?: string | null
           id?: string
           installment_id?: string | null
+          receipt_url?: string | null
           type: string
           user_id: string
         }
@@ -432,6 +434,7 @@ export type Database = {
           description?: string | null
           id?: string
           installment_id?: string | null
+          receipt_url?: string | null
           type?: string
           user_id?: string
         }
