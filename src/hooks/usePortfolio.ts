@@ -77,6 +77,8 @@ export function usePortfolio(options?: UsePortfolioOptions) {
     }
   }, [prices, lastUpdated, isLoading]);
 
+  
+
   // Fetch crypto prices from CoinGecko
   const fetchCryptoPrices = useCallback(async (tickers: string[]): Promise<Record<string, number>> => {
     const coinIds = tickers
@@ -184,7 +186,22 @@ export function usePortfolio(options?: UsePortfolioOptions) {
     setIsFetchingPrices(false);
   }, [holdings, prices, fetchCryptoPrices, fetchStockPrice]);
 
-  // CRUD operations
+  // Auto-fetch prices on mount if there are holdings and missing prices
+  const hasInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!isLoading && holdings.length > 0 && !hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      // Check if any holdings are missing prices
+      const missingPrices = holdings.some(h => !prices[h.ticker]);
+      if (missingPrices) {
+        // Delay to avoid too many requests on mount
+        const timeout = setTimeout(() => {
+          refreshPrices();
+        }, 500);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [isLoading, holdings, prices, refreshPrices]);
   const addHolding = useCallback((
     holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>,
     createTransaction: boolean = false
