@@ -10,6 +10,7 @@ import IncomeStatement from "./pages/IncomeStatement";
 import IncomeSources from "./pages/IncomeSources";
 import RecurringExpenses from "./pages/RecurringExpenses";
 import BillsCalendar from "./pages/BillsCalendar";
+import FinancialGoals from "./pages/FinancialGoals";
 import BalanceSheet from "./pages/BalanceSheet";
 import CashFlowStatement from "./pages/CashFlowStatement";
 import Installments from "./pages/Installments";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/income-sources" element={<IncomeSources />} />
             <Route path="/recurring-expenses" element={<RecurringExpenses />} />
             <Route path="/bills-calendar" element={<BillsCalendar />} />
+            <Route path="/financial-goals" element={<FinancialGoals />} />
             <Route path="/balance-sheet" element={<BalanceSheet />} />
             <Route path="/cash-flow-statement" element={<CashFlowStatement />} />
             <Route path="/installments" element={<Installments />} />
