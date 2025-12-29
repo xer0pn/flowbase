@@ -1,4 +1,5 @@
 import { useInstallments } from '@/hooks/useInstallments';
+import { useTransactions } from '@/hooks/useTransactions';
 import { InstallmentForm } from '@/components/InstallmentForm';
 import { InstallmentList } from '@/components/InstallmentList';
 import { InstallmentWidget } from '@/components/InstallmentWidget';
@@ -7,6 +8,8 @@ import { Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Installments = () => {
+  const { addTransaction } = useTransactions();
+  
   const {
     installments,
     isLoading,
@@ -18,7 +21,11 @@ const Installments = () => {
     getTotalRemaining,
     getNextPaymentDue,
     getOverdueCount,
-  } = useInstallments();
+  } = useInstallments({
+    onPaymentComplete: (transaction) => {
+      addTransaction(transaction);
+    },
+  });
 
   const handleAddInstallment = (installment: Parameters<typeof addInstallment>[0]) => {
     addInstallment(installment);
@@ -27,7 +34,7 @@ const Installments = () => {
 
   const handleMarkPaid = (id: string) => {
     markPaymentComplete(id);
-    toast.success('Payment marked as complete');
+    toast.success('Payment marked as complete & expense recorded');
   };
 
   const handleDelete = (id: string) => {

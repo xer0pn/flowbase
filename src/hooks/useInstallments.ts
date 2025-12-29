@@ -1,11 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { Installment, InstallmentStatus } from '@/types/finance';
+import { Installment, InstallmentStatus, Transaction } from '@/types/finance';
 import { format, parseISO, isBefore, startOfDay } from 'date-fns';
 
 const INSTALLMENTS_KEY = 'cashflow_installments';
 
-export function useInstallments() {
+interface UseInstallmentsOptions {
+  onPaymentComplete?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
+}
+
+export function useInstallments(options?: UseInstallmentsOptions) {
   const [installments, setInstallments] = useState<Installment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,6 +91,21 @@ export function useInstallments() {
   }, []);
 
   const markPaymentComplete = useCallback((id: string) => {
+    const installment = installments.find(inst => inst.id === id);
+    if (!installment || installment.status === 'completed') return;
+
+    // Create expense transaction for this payment
+    if (options?.onPaymentComplete) {
+      options.onPaymentComplete({
+        date: format(new Date(), 'yyyy-MM-dd'),
+        type: 'expense',
+        category: 'installments',
+        description: `Installment payment: ${installment.itemName} (${installment.completedPayments + 1}/${installment.totalPayments})`,
+        amount: installment.monthlyPayment,
+        activityType: 'financing',
+      });
+    }
+
     setInstallments(prev => prev.map(inst => {
       if (inst.id !== id) return inst;
       
@@ -108,7 +127,7 @@ export function useInstallments() {
         updatedAt: new Date().toISOString(),
       };
     }));
-  }, []);
+  }, [installments, options]);
 
   // CSV Export
   const exportToCSV = useCallback(() => {

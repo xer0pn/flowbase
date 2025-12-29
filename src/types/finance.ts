@@ -134,6 +134,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: 'subscriptions', name: 'Subscriptions', type: 'expense' },
   { id: 'education', name: 'Education', type: 'expense' },
   { id: 'debt', name: 'Debt Payments', type: 'expense' },
+  { id: 'installments', name: 'Installments', type: 'expense' },
   { id: 'taxes', name: 'Taxes', type: 'expense' },
   { id: 'other-expense', name: 'Other Expense', type: 'expense' },
 ];
