@@ -8,7 +8,7 @@ import { Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Installments = () => {
-  const { addTransaction } = useTransactions();
+  const { addTransaction, deleteTransactionsByInstallmentId } = useTransactions();
   
   const {
     installments,
@@ -24,6 +24,9 @@ const Installments = () => {
   } = useInstallments({
     onPaymentComplete: (transaction) => {
       addTransaction(transaction);
+    },
+    onInstallmentDelete: (installmentId) => {
+      deleteTransactionsByInstallmentId(installmentId);
     },
   });
 

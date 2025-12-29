@@ -7,6 +7,7 @@ const INSTALLMENTS_KEY = 'cashflow_installments';
 
 interface UseInstallmentsOptions {
   onPaymentComplete?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
+  onInstallmentDelete?: (installmentId: string) => void;
 }
 
 export function useInstallments(options?: UseInstallmentsOptions) {
@@ -87,14 +88,18 @@ export function useInstallments(options?: UseInstallmentsOptions) {
   }, []);
 
   const deleteInstallment = useCallback((id: string) => {
+    // Delete related transactions first
+    if (options?.onInstallmentDelete) {
+      options.onInstallmentDelete(id);
+    }
     setInstallments(prev => prev.filter(inst => inst.id !== id));
-  }, []);
+  }, [options]);
 
   const markPaymentComplete = useCallback((id: string) => {
     const installment = installments.find(inst => inst.id === id);
     if (!installment || installment.status === 'completed') return;
 
-    // Create expense transaction for this payment
+    // Create expense transaction for this payment with installmentId link
     if (options?.onPaymentComplete) {
       options.onPaymentComplete({
         date: format(new Date(), 'yyyy-MM-dd'),
@@ -103,6 +108,7 @@ export function useInstallments(options?: UseInstallmentsOptions) {
         description: `Installment payment: ${installment.itemName} (${installment.completedPayments + 1}/${installment.totalPayments})`,
         amount: installment.monthlyPayment,
         activityType: 'financing',
+        installmentId: installment.id,
       });
     }
 

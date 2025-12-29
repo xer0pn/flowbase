@@ -73,6 +73,10 @@ export function useTransactions() {
     setTransactions(prev => prev.filter(t => t.id !== id));
   }, []);
 
+  const deleteTransactionsByInstallmentId = useCallback((installmentId: string) => {
+    setTransactions(prev => prev.filter(t => t.installmentId !== installmentId));
+  }, []);
+
   const addCategory = useCallback((category: Omit<Category, 'id'>) => {
     const newCategory: Category = {
       ...category,
@@ -230,6 +234,7 @@ export function useTransactions() {
     addTransaction,
     updateTransaction,
     deleteTransaction,
+    deleteTransactionsByInstallmentId,
     addCategory,
     addBudget,
     updateBudget,
