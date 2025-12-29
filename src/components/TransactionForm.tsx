@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Category, TransactionType } from '@/types/finance';
+import { Category, TransactionType, ActivityType } from '@/types/finance';
 import { Plus } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -21,6 +21,7 @@ interface TransactionFormProps {
     category: string;
     description: string;
     amount: number;
+    activityType?: ActivityType;
   }) => void;
 }
 
@@ -30,6 +31,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [activityType, setActivityType] = useState<ActivityType>('operating');
 
   const filteredCategories = categories.filter(c => c.type === type);
 
@@ -43,12 +45,14 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
       category,
       description,
       amount: parseFloat(amount),
+      activityType,
     });
 
     // Reset form
     setCategory('');
     setDescription('');
     setAmount('');
+    setActivityType('operating');
   };
 
   return (
@@ -80,6 +84,21 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
           >
             Expense
           </button>
+        </div>
+
+        {/* Activity Type */}
+        <div className="space-y-2">
+          <Label className="uppercase text-xs tracking-wide">Activity Type</Label>
+          <Select value={activityType} onValueChange={(v) => setActivityType(v as ActivityType)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="operating">Operating (daily activities)</SelectItem>
+              <SelectItem value="investing">Investing (investments)</SelectItem>
+              <SelectItem value="financing">Financing (loans/debt)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Date */}

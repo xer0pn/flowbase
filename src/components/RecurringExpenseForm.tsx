@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { DEFAULT_CATEGORIES, RecurringExpense, RecurringFrequency } from '@/types/finance';
+import { DEFAULT_CATEGORIES, RecurringExpense, RecurringFrequency, ActivityType } from '@/types/finance';
 import { FREQUENCY_LABELS } from '@/hooks/useRecurringExpense';
 import { Plus } from 'lucide-react';
 
@@ -44,6 +44,7 @@ export function RecurringExpenseForm({
   const [amount, setAmount] = useState(editingExpense?.amount?.toString() || '');
   const [frequency, setFrequency] = useState<RecurringFrequency>(editingExpense?.frequency || 'monthly');
   const [dayOfMonth, setDayOfMonth] = useState(editingExpense?.dayOfMonth?.toString() || '1');
+  const [activityType, setActivityType] = useState<ActivityType>(editingExpense?.activityType || 'operating');
   const [notes, setNotes] = useState(editingExpense?.notes || '');
 
   const isControlled = isOpen !== undefined;
@@ -57,6 +58,7 @@ export function RecurringExpenseForm({
       setAmount('');
       setFrequency('monthly');
       setDayOfMonth('1');
+      setActivityType('operating');
       setNotes('');
     }
   };
@@ -73,6 +75,7 @@ export function RecurringExpenseForm({
       frequency,
       dayOfMonth: parseInt(dayOfMonth),
       isActive: editingExpense?.isActive ?? true,
+      activityType,
       lastGeneratedDate: editingExpense?.lastGeneratedDate,
       notes: notes || undefined,
     });
@@ -157,6 +160,20 @@ export function RecurringExpenseForm({
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="activityType">Activity Type (for Cash Flow)</Label>
+        <Select value={activityType} onValueChange={(v) => setActivityType(v as ActivityType)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="operating">Operating (daily bills)</SelectItem>
+            <SelectItem value="investing">Investing (investment fees)</SelectItem>
+            <SelectItem value="financing">Financing (loan payments)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

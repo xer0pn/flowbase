@@ -8,9 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { PortfolioHolding, AssetCategory } from '@/types/finance';
 import { format } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface PortfolioFormProps {
-  onSubmit: (holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>, createTransaction: boolean) => void;
 }
 
 const COMMON_STOCKS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'AMD'];
@@ -24,6 +25,7 @@ export function PortfolioForm({ onSubmit }: PortfolioFormProps) {
   const [purchasePrice, setPurchasePrice] = useState('');
   const [purchaseDate, setPurchaseDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [notes, setNotes] = useState('');
+  const [recordTransaction, setRecordTransaction] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ export function PortfolioForm({ onSubmit }: PortfolioFormProps) {
       purchasePrice: parseFloat(purchasePrice),
       purchaseDate,
       notes: notes || undefined,
-    });
+    }, recordTransaction);
 
     // Reset form
     setTicker('');
@@ -173,6 +175,20 @@ export function PortfolioForm({ onSubmit }: PortfolioFormProps) {
               placeholder="Any additional notes..."
               className="mt-1 border-2 min-h-[60px]"
             />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="recordTransaction"
+              checked={recordTransaction}
+              onCheckedChange={(checked) => setRecordTransaction(checked === true)}
+            />
+            <Label 
+              htmlFor="recordTransaction" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Record as investing transaction (appears in Cash Flow)
+            </Label>
           </div>
 
           <Button type="submit" className="w-full border-2">
