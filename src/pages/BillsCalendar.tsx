@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import { Calendar } from '@/components/ui/calendar';
+import { CalendarGrid } from '@/components/CalendarGrid';
 import { useRecurringIncome } from '@/hooks/useRecurringIncome';
 import { useRecurringExpense } from '@/hooks/useRecurringExpense';
 import { useInstallments } from '@/hooks/useInstallments';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, parseISO, isBefore } from 'date-fns';
-import { CalendarDays, ArrowUpRight, ArrowDownRight, CreditCard, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, isSameDay, addMonths, parseISO, isBefore } from 'date-fns';
+import { CalendarDays, ArrowUpRight, CreditCard, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -200,43 +200,11 @@ const BillsCalendar = () => {
             </Button>
           </div>
           
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            month={currentMonth}
-            onMonthChange={setCurrentMonth}
-            className="w-full pointer-events-auto [&_.rdp-caption]:hidden [&_.rdp-nav]:hidden [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_.rdp-table]:w-full [&_.rdp-head_cell]:text-base [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:py-3 [&_.rdp-cell]:p-1 [&_.rdp-day]:h-14 [&_.rdp-day]:w-full [&_.rdp-day]:text-base"
-            modifiers={{
-              hasEvent: (date) => {
-                const key = format(date, 'yyyy-MM-dd');
-                return !!eventDates[key];
-              },
-            }}
-            modifiersStyles={{
-              hasEvent: {
-                fontWeight: 'bold',
-              },
-            }}
-            components={{
-              DayContent: ({ date }) => {
-                const key = format(date, 'yyyy-MM-dd');
-                const events = eventDates[key];
-                
-                return (
-                  <div className="relative w-full h-full flex flex-col items-center justify-center">
-                    <span className="text-lg">{date.getDate()}</span>
-                    {events && (
-                      <div className="flex gap-1 mt-1">
-                        {events.hasIncome && <div className="w-2 h-2 rounded-full bg-income" />}
-                        {events.hasExpense && <div className="w-2 h-2 rounded-full bg-expense" />}
-                        {events.hasInstallment && <div className="w-2 h-2 rounded-full bg-orange-500" />}
-                      </div>
-                    )}
-                  </div>
-                );
-              },
-            }}
+          <CalendarGrid
+            currentMonth={currentMonth}
+            selectedDate={selectedDate}
+            onSelectDate={(date) => setSelectedDate(date)}
+            eventDates={eventDates}
           />
 
           {/* Legend */}
