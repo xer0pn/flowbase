@@ -17,6 +17,7 @@ export interface Transaction {
   amount: number;
   activityType?: ActivityType;
   installmentId?: string; // Links to source installment if created from payment
+  receiptUrl?: string | null; // URL to attached receipt in storage
   createdAt: string;
 }
 
