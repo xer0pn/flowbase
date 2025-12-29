@@ -44,12 +44,8 @@ export function usePortfolio(options?: UsePortfolioOptions) {
       const storedHoldings = localStorage.getItem(PORTFOLIO_KEY);
       const storedPrices = localStorage.getItem(PRICES_CACHE_KEY);
 
-      console.log('Loading portfolio from localStorage:', storedHoldings);
-
       if (storedHoldings) {
-        const parsed = JSON.parse(storedHoldings);
-        console.log('Parsed holdings:', parsed);
-        setHoldings(parsed);
+        setHoldings(JSON.parse(storedHoldings));
       }
       if (storedPrices) {
         const cached = JSON.parse(storedPrices);
@@ -67,7 +63,6 @@ export function usePortfolio(options?: UsePortfolioOptions) {
   // Save holdings to localStorage
   useEffect(() => {
     if (!isLoading) {
-      console.log('Saving holdings to localStorage:', holdings);
       localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(holdings));
     }
   }, [holdings, isLoading]);
@@ -194,8 +189,6 @@ export function usePortfolio(options?: UsePortfolioOptions) {
     holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>,
     createTransaction: boolean = false
   ) => {
-    console.log('Adding holding:', holding, 'createTransaction:', createTransaction);
-    
     const newHolding: PortfolioHolding = {
       ...holding,
       ticker: holding.ticker.toUpperCase(),
@@ -204,12 +197,7 @@ export function usePortfolio(options?: UsePortfolioOptions) {
       updatedAt: new Date().toISOString(),
     };
     
-    console.log('New holding created:', newHolding);
-    setHoldings(prev => {
-      const updated = [newHolding, ...prev];
-      console.log('Updated holdings array:', updated);
-      return updated;
-    });
+    setHoldings(prev => [newHolding, ...prev]);
 
     // Optionally create an investing expense transaction
     if (createTransaction && options?.onTransactionCreate) {
