@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
 import IncomeStatement from "./pages/IncomeStatement";
+import IncomeSources from "./pages/IncomeSources";
 import BalanceSheet from "./pages/BalanceSheet";
 import CashFlowStatement from "./pages/CashFlowStatement";
 import Installments from "./pages/Installments";
@@ -26,6 +27,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/income-statement" element={<IncomeStatement />} />
+            <Route path="/income-sources" element={<IncomeSources />} />
             <Route path="/balance-sheet" element={<BalanceSheet />} />
             <Route path="/cash-flow-statement" element={<CashFlowStatement />} />
             <Route path="/installments" element={<Installments />} />
