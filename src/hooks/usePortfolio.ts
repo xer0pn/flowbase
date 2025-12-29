@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Papa from 'papaparse';
 import { PortfolioHolding, PriceData, Transaction } from '@/types/finance';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 
 const PORTFOLIO_KEY = 'cashflow_portfolio';
 const PRICES_CACHE_KEY = 'cashflow_prices_cache';
@@ -111,26 +112,24 @@ export function usePortfolio(options?: UsePortfolioOptions) {
     }
   }, []);
 
-  // Fetch stock price from Yahoo Finance (free, no API key needed)
-  const fetchStockPrice = useCallback(async (ticker: string): Promise<number | null> => {
+  // Fetch stock prices via edge function (avoids CORS)
+  const fetchStockPrices = useCallback(async (tickers: string[]): Promise<Record<string, number>> => {
+    if (tickers.length === 0) return {};
+    
     try {
-      // Using Yahoo Finance via a CORS proxy
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`
-      );
+      const { data, error } = await supabase.functions.invoke('stock-prices', {
+        body: { tickers },
+      });
       
-      if (!response.ok) throw new Error('Failed to fetch stock price');
-      
-      const data = await response.json();
-      
-      if (data.chart?.result?.[0]?.meta?.regularMarketPrice) {
-        return data.chart.result[0].meta.regularMarketPrice;
+      if (error) {
+        console.error('Error fetching stock prices:', error);
+        return {};
       }
       
-      return null;
+      return data?.prices || {};
     } catch (err) {
-      console.error('Error fetching stock price:', err);
-      return null;
+      console.error('Error fetching stock prices:', err);
+      return {};
     }
   }, []);
 
@@ -164,27 +163,23 @@ export function usePortfolio(options?: UsePortfolioOptions) {
       });
     }
     
-    // Fetch stock prices (one by one due to rate limits)
-    for (const ticker of stockTickers) {
-      const price = await fetchStockPrice(ticker);
-      if (price !== null) {
+    // Fetch stock prices (batch request via edge function)
+    if (stockTickers.length > 0) {
+      const stockPrices = await fetchStockPrices(stockTickers);
+      Object.entries(stockPrices).forEach(([ticker, price]) => {
         newPrices[ticker] = {
           ticker,
           price,
           currency: 'USD',
           lastUpdated: new Date().toISOString(),
         };
-      }
-      // Add delay between requests to avoid rate limiting
-      if (stockTickers.indexOf(ticker) < stockTickers.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
+      });
     }
     
     setPrices(newPrices);
     setLastUpdated(new Date());
     setIsFetchingPrices(false);
-  }, [holdings, prices, fetchCryptoPrices, fetchStockPrice]);
+  }, [holdings, prices, fetchCryptoPrices, fetchStockPrices]);
 
   // Auto-fetch prices on mount if there are holdings and missing prices
   const hasInitializedRef = useRef(false);
