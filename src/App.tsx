@@ -18,6 +18,8 @@ import BalanceSheet from "./pages/BalanceSheet";
 import CashFlowStatement from "./pages/CashFlowStatement";
 import Installments from "./pages/Installments";
 import Portfolio from "./pages/Portfolio";
+import Settings from "./pages/Settings";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={
             <ProtectedRoute>
               <AppLayout><Index /></AppLayout>
@@ -80,6 +83,11 @@ const App = () => (
           <Route path="/portfolio" element={
             <ProtectedRoute>
               <AppLayout><Portfolio /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <AppLayout><Settings /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFound />} />
