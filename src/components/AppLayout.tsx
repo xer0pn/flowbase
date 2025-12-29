@@ -13,6 +13,7 @@ import {
   BarChart3,
   Coins,
   Receipt,
+  CalendarDays,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ const navItems = [
   { to: '/income-statement', label: 'Income Statement', icon: FileText },
   { to: '/income-sources', label: 'Income Sources', icon: Coins },
   { to: '/recurring-expenses', label: 'Recurring Expenses', icon: Receipt },
+  { to: '/bills-calendar', label: 'Bills Calendar', icon: CalendarDays },
   { to: '/balance-sheet', label: 'Balance Sheet', icon: Scale },
   { to: '/cash-flow-statement', label: 'Cash Flow', icon: TrendingUp },
   { to: '/installments', label: 'Installments', icon: CreditCard },
