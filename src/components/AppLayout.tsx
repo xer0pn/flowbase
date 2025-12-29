@@ -9,6 +9,8 @@ import {
   TrendingUp,
   Menu,
   X,
+  CreditCard,
+  BarChart3,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +24,8 @@ const navItems = [
   { to: '/income-statement', label: 'Income Statement', icon: FileText },
   { to: '/balance-sheet', label: 'Balance Sheet', icon: Scale },
   { to: '/cash-flow-statement', label: 'Cash Flow', icon: TrendingUp },
+  { to: '/installments', label: 'Installments', icon: CreditCard },
+  { to: '/portfolio', label: 'Portfolio', icon: BarChart3 },
 ];
 
 export function AppLayout({ children }: AppLayoutProps) {

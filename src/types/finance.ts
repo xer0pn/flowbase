@@ -65,6 +65,50 @@ export interface Liability {
   updatedAt: string;
 }
 
+// Installment tracking
+export type InstallmentStatus = 'active' | 'completed' | 'overdue';
+export type InstallmentProvider = 'tabby' | 'tamara' | 'bank' | 'store_credit' | 'other';
+
+export interface Installment {
+  id: string;
+  itemName: string;
+  totalAmount: number;
+  downPayment: number;
+  remainingAmount: number;
+  monthlyPayment: number;
+  totalPayments: number;
+  completedPayments: number;
+  nextDueDate: string;
+  status: InstallmentStatus;
+  interestRate: number;
+  provider: InstallmentProvider;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Portfolio tracking
+export type AssetCategory = 'stock' | 'crypto';
+
+export interface PortfolioHolding {
+  id: string;
+  assetType: AssetCategory;
+  ticker: string;
+  assetName: string;
+  quantity: number;
+  purchasePrice: number;
+  purchaseDate: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PriceData {
+  ticker: string;
+  price: number;
+  currency: string;
+  lastUpdated: string;
+}
+
 // Default categories inspired by Cash Flow Quadrant
 export const DEFAULT_CATEGORIES: Category[] = [
   // Income Categories (E, S, B, I quadrants)
@@ -106,6 +150,20 @@ export const LIABILITY_TYPE_LABELS: Record<LiabilityType, string> = {
   credit_card: 'Credit Card',
   loan: 'Loan',
   mortgage: 'Mortgage',
+  other: 'Other',
+};
+
+export const INSTALLMENT_STATUS_LABELS: Record<InstallmentStatus, string> = {
+  active: 'Active',
+  completed: 'Completed',
+  overdue: 'Overdue',
+};
+
+export const INSTALLMENT_PROVIDER_LABELS: Record<InstallmentProvider, string> = {
+  tabby: 'Tabby',
+  tamara: 'Tamara',
+  bank: 'Bank',
+  store_credit: 'Store Credit',
   other: 'Other',
 };
 
