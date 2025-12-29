@@ -5,6 +5,7 @@ import { TransactionList } from '@/components/TransactionList';
 import { CashFlowChart } from '@/components/CashFlowChart';
 import { CategoryBreakdown } from '@/components/CategoryBreakdown';
 import { CSVActions } from '@/components/CSVActions';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { TrendingUp, TrendingDown, Wallet, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -64,10 +65,11 @@ const Index = () => {
               <h1 className="text-3xl font-bold tracking-tight">CashFlow Tracker</h1>
               <p className="text-muted-foreground mt-1">Track your income and expenses</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="border-2 border-border px-4 py-2 font-mono text-sm">
                 {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>
