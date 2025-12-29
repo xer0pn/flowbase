@@ -2,7 +2,6 @@ import { usePortfolio } from '@/hooks/usePortfolio';
 import { PortfolioForm } from '@/components/PortfolioForm';
 import { PortfolioList } from '@/components/PortfolioList';
 import { PortfolioWidget } from '@/components/PortfolioWidget';
-import { PortfolioSettings } from '@/components/PortfolioSettings';
 import { Button } from '@/components/ui/button';
 import { Download, RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,12 +15,10 @@ const Portfolio = () => {
     isFetchingPrices,
     lastUpdated,
     error,
-    alphaVantageKey,
     addHolding,
     deleteHolding,
     refreshPrices,
     exportToCSV,
-    saveApiKey,
     getPortfolioSummary,
     getHoldingWithPrice,
   } = usePortfolio();
@@ -102,7 +99,7 @@ const Portfolio = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Form, Widget & Settings */}
+          {/* Left Column - Form & Widget */}
           <div className="space-y-6">
             <PortfolioForm onSubmit={handleAddHolding} />
             <PortfolioWidget
@@ -112,10 +109,6 @@ const Portfolio = () => {
               bestPerformer={summary.bestPerformer}
               worstPerformer={summary.worstPerformer}
               holdingsCount={holdings.length}
-            />
-            <PortfolioSettings
-              apiKey={alphaVantageKey}
-              onSaveApiKey={saveApiKey}
             />
           </div>
 

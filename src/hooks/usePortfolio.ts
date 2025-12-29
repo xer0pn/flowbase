@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 
 const PORTFOLIO_KEY = 'cashflow_portfolio';
 const PRICES_CACHE_KEY = 'cashflow_prices_cache';
-const API_KEY_STORAGE = 'cashflow_alphavantage_key';
 
 // CoinGecko ID mapping for common cryptos
 const CRYPTO_ID_MAP: Record<string, string> = {
@@ -31,7 +30,7 @@ export function usePortfolio() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingPrices, setIsFetchingPrices] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [alphaVantageKey, setAlphaVantageKey] = useState<string>('');
+  
   const [error, setError] = useState<string | null>(null);
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,7 +38,6 @@ export function usePortfolio() {
   useEffect(() => {
     const storedHoldings = localStorage.getItem(PORTFOLIO_KEY);
     const storedPrices = localStorage.getItem(PRICES_CACHE_KEY);
-    const storedKey = localStorage.getItem(API_KEY_STORAGE);
 
     if (storedHoldings) {
       setHoldings(JSON.parse(storedHoldings));
@@ -50,9 +48,6 @@ export function usePortfolio() {
       if (cached.lastUpdated) {
         setLastUpdated(new Date(cached.lastUpdated));
       }
-    }
-    if (storedKey) {
-      setAlphaVantageKey(storedKey);
     }
     setIsLoading(false);
   }, []);
@@ -73,12 +68,6 @@ export function usePortfolio() {
       }));
     }
   }, [prices, lastUpdated, isLoading]);
-
-  // Save API key
-  const saveApiKey = useCallback((key: string) => {
-    setAlphaVantageKey(key);
-    localStorage.setItem(API_KEY_STORAGE, key);
-  }, []);
 
   // Fetch crypto prices from CoinGecko
   const fetchCryptoPrices = useCallback(async (tickers: string[]): Promise<Record<string, number>> => {
@@ -112,29 +101,20 @@ export function usePortfolio() {
     }
   }, []);
 
-  // Fetch stock price from Alpha Vantage
+  // Fetch stock price from Yahoo Finance (free, no API key needed)
   const fetchStockPrice = useCallback(async (ticker: string): Promise<number | null> => {
-    if (!alphaVantageKey) {
-      setError('Alpha Vantage API key not set. Add it in Settings to fetch stock prices.');
-      return null;
-    }
-
     try {
+      // Using Yahoo Finance via a CORS proxy
       const response = await fetch(
-        `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${alphaVantageKey}`
+        `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`
       );
       
       if (!response.ok) throw new Error('Failed to fetch stock price');
       
       const data = await response.json();
       
-      if (data['Note']) {
-        setError('API rate limit reached. Try again in a minute.');
-        return null;
-      }
-      
-      if (data['Global Quote'] && data['Global Quote']['05. price']) {
-        return parseFloat(data['Global Quote']['05. price']);
+      if (data.chart?.result?.[0]?.meta?.regularMarketPrice) {
+        return data.chart.result[0].meta.regularMarketPrice;
       }
       
       return null;
@@ -142,7 +122,7 @@ export function usePortfolio() {
       console.error('Error fetching stock price:', err);
       return null;
     }
-  }, [alphaVantageKey]);
+  }, []);
 
   // Fetch all prices
   const refreshPrices = useCallback(async () => {
@@ -317,13 +297,11 @@ export function usePortfolio() {
     isFetchingPrices,
     lastUpdated,
     error,
-    alphaVantageKey,
     addHolding,
     updateHolding,
     deleteHolding,
     refreshPrices,
     exportToCSV,
-    saveApiKey,
     getPortfolioSummary,
     getHoldingWithPrice,
   };
