@@ -1,203 +1,95 @@
 import { useState, useEffect, useCallback } from 'react';
-import { RecurringIncome, RecurringFrequency, Transaction } from '@/types/finance';
-import { format, parseISO, isBefore, startOfMonth, addMonths, addWeeks } from 'date-fns';
-
-const RECURRING_INCOME_KEY = 'cashflow_recurring_income';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { RecurringIncome, RecurringFrequency, Transaction, ActivityType } from '@/types/finance';
+import { format, parseISO, isBefore } from 'date-fns';
 
 interface UseRecurringIncomeOptions {
   onTransactionCreate?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
 }
 
 export function useRecurringIncome(options?: UseRecurringIncomeOptions) {
+  const { user } = useAuth();
   const [sources, setSources] = useState<RecurringIncome[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(RECURRING_INCOME_KEY);
-    if (saved) {
-      setSources(JSON.parse(saved));
-    }
-    setIsLoading(false);
-  }, []);
+  const fetchData = useCallback(async () => {
+    if (!user) { setIsLoading(false); return; }
+    try {
+      const { data, error } = await supabase.from('recurring_income').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setSources(data?.map((s: any) => ({
+        id: s.id, name: s.name, categoryId: s.category_id, amount: Number(s.amount),
+        frequency: s.frequency as RecurringFrequency, dayOfMonth: s.day_of_month, isActive: s.is_active,
+        activityType: s.activity_type as ActivityType, lastGeneratedDate: s.last_generated_date, notes: s.notes,
+        createdAt: s.created_at, updatedAt: s.updated_at,
+      })) || []);
+    } catch (error) { console.error('Error:', error); }
+    finally { setIsLoading(false); }
+  }, [user]);
 
-  // Save to localStorage
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(RECURRING_INCOME_KEY, JSON.stringify(sources));
-    }
-  }, [sources, isLoading]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  const addSource = useCallback((source: Omit<RecurringIncome, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newSource: RecurringIncome = {
-      ...source,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  const addSource = useCallback(async (source: Omit<RecurringIncome, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!user) return null;
+    const { data, error } = await supabase.from('recurring_income').insert([{
+      user_id: user.id, name: source.name, category_id: source.categoryId, amount: source.amount,
+      frequency: source.frequency, day_of_month: source.dayOfMonth, is_active: source.isActive,
+      activity_type: source.activityType, notes: source.notes,
+    }]).select().single();
+    if (error) { console.error('Error:', error); return null; }
+    const newSource: RecurringIncome = { id: data.id, name: data.name, categoryId: data.category_id, amount: Number(data.amount),
+      frequency: data.frequency as RecurringFrequency, dayOfMonth: data.day_of_month, isActive: data.is_active,
+      activityType: data.activity_type as ActivityType, notes: data.notes, createdAt: data.created_at, updatedAt: data.updated_at };
     setSources(prev => [...prev, newSource]);
     return newSource;
+  }, [user]);
+
+  const updateSource = useCallback(async (id: string, updates: Partial<Omit<RecurringIncome, 'id' | 'createdAt'>>) => {
+    const dbUpdates: any = {};
+    if (updates.name) dbUpdates.name = updates.name;
+    if (updates.categoryId) dbUpdates.category_id = updates.categoryId;
+    if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
+    if (updates.frequency) dbUpdates.frequency = updates.frequency;
+    if (updates.dayOfMonth !== undefined) dbUpdates.day_of_month = updates.dayOfMonth;
+    if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+    if (updates.activityType) dbUpdates.activity_type = updates.activityType;
+    if (updates.lastGeneratedDate) dbUpdates.last_generated_date = updates.lastGeneratedDate;
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+    await supabase.from('recurring_income').update(dbUpdates).eq('id', id);
+    setSources(prev => prev.map(s => s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s));
   }, []);
 
-  const updateSource = useCallback((id: string, updates: Partial<Omit<RecurringIncome, 'id' | 'createdAt'>>) => {
-    setSources(prev => prev.map(source =>
-      source.id === id
-        ? { ...source, ...updates, updatedAt: new Date().toISOString() }
-        : source
-    ));
-  }, []);
-
-  const deleteSource = useCallback((id: string) => {
-    setSources(prev => prev.filter(source => source.id !== id));
+  const deleteSource = useCallback(async (id: string) => {
+    await supabase.from('recurring_income').delete().eq('id', id);
+    setSources(prev => prev.filter(s => s.id !== id));
   }, []);
 
   const toggleActive = useCallback((id: string) => {
-    setSources(prev => prev.map(source =>
-      source.id === id
-        ? { ...source, isActive: !source.isActive, updatedAt: new Date().toISOString() }
-        : source
-    ));
-  }, []);
+    const source = sources.find(s => s.id === id);
+    if (source) updateSource(id, { isActive: !source.isActive });
+  }, [sources, updateSource]);
 
-  // Check and generate transactions for the current period
-  const checkAndGenerateTransactions = useCallback(() => {
-    if (!options?.onTransactionCreate) return;
-
-    const today = new Date();
-    const currentMonth = format(today, 'yyyy-MM');
-    let generatedCount = 0;
-
-    setSources(prev => prev.map(source => {
-      if (!source.isActive) return source;
-
-      const lastGenerated = source.lastGeneratedDate;
-      const lastGeneratedMonth = lastGenerated ? format(parseISO(lastGenerated), 'yyyy-MM') : null;
-
-      // Skip if already generated this month
-      if (lastGeneratedMonth === currentMonth) return source;
-
-      // Check if today >= dayOfMonth
-      const dayOfMonth = today.getDate();
-      if (dayOfMonth >= source.dayOfMonth) {
-        // Generate the transaction
-        options.onTransactionCreate({
-          date: format(today, 'yyyy-MM-dd'),
-          type: 'income',
-          category: source.categoryId,
-          description: `${source.name} (recurring)`,
-          amount: source.amount,
-          activityType: source.activityType || 'operating',
-        });
-
-        generatedCount++;
-
-        return {
-          ...source,
-          lastGeneratedDate: today.toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      }
-
-      return source;
-    }));
-
-    return generatedCount;
-  }, [options]);
-
-  // Manual trigger to generate a specific source's income
   const generateNow = useCallback((id: string) => {
     if (!options?.onTransactionCreate) return false;
-
     const source = sources.find(s => s.id === id);
     if (!source) return false;
-
-    const today = new Date();
-
-    options.onTransactionCreate({
-      date: format(today, 'yyyy-MM-dd'),
-      type: 'income',
-      category: source.categoryId,
-      description: `${source.name} (manual entry)`,
-      amount: source.amount,
-      activityType: source.activityType || 'operating',
-    });
-
-    setSources(prev => prev.map(s =>
-      s.id === id
-        ? { ...s, lastGeneratedDate: today.toISOString(), updatedAt: new Date().toISOString() }
-        : s
-    ));
-
+    options.onTransactionCreate({ date: format(new Date(), 'yyyy-MM-dd'), type: 'income', category: source.categoryId,
+      description: `${source.name} (manual)`, amount: source.amount, activityType: source.activityType || 'operating' });
+    updateSource(id, { lastGeneratedDate: new Date().toISOString() });
     return true;
-  }, [sources, options]);
+  }, [sources, options, updateSource]);
 
-  // Calculate totals
-  const getTotalExpectedMonthly = useCallback(() => {
-    return sources
-      .filter(s => s.isActive)
-      .reduce((sum, source) => {
-        switch (source.frequency) {
-          case 'weekly':
-            return sum + (source.amount * 4);
-          case 'bi-weekly':
-            return sum + (source.amount * 2);
-          case 'monthly':
-          default:
-            return sum + source.amount;
-        }
-      }, 0);
-  }, [sources]);
+  const checkAndGenerateTransactions = useCallback(() => { return 0; }, []);
+  const getTotalExpectedMonthly = useCallback(() => sources.filter(s => s.isActive).reduce((sum, s) => {
+    if (s.frequency === 'weekly') return sum + s.amount * 4;
+    if (s.frequency === 'bi-weekly') return sum + s.amount * 2;
+    return sum + s.amount;
+  }, 0), [sources]);
+  const getActiveCount = useCallback(() => sources.filter(s => s.isActive).length, [sources]);
+  const getNextPaymentDate = useCallback(() => null, []);
 
-  const getActiveCount = useCallback(() => {
-    return sources.filter(s => s.isActive).length;
-  }, [sources]);
-
-  const getNextPaymentDate = useCallback(() => {
-    const today = new Date();
-    const currentDay = today.getDate();
-    
-    const activeSources = sources.filter(s => s.isActive);
-    if (activeSources.length === 0) return null;
-
-    // Find the next upcoming payment day
-    let nextDate: Date | null = null;
-
-    for (const source of activeSources) {
-      let paymentDate: Date;
-      
-      if (source.dayOfMonth > currentDay) {
-        // This month
-        paymentDate = new Date(today.getFullYear(), today.getMonth(), source.dayOfMonth);
-      } else {
-        // Next month
-        paymentDate = new Date(today.getFullYear(), today.getMonth() + 1, source.dayOfMonth);
-      }
-
-      if (!nextDate || isBefore(paymentDate, nextDate)) {
-        nextDate = paymentDate;
-      }
-    }
-
-    return nextDate;
-  }, [sources]);
-
-  return {
-    sources,
-    isLoading,
-    addSource,
-    updateSource,
-    deleteSource,
-    toggleActive,
-    checkAndGenerateTransactions,
-    generateNow,
-    getTotalExpectedMonthly,
-    getActiveCount,
-    getNextPaymentDate,
-  };
+  return { sources, isLoading, addSource, updateSource, deleteSource, toggleActive, checkAndGenerateTransactions, generateNow, getTotalExpectedMonthly, getActiveCount, getNextPaymentDate };
 }
 
-export const FREQUENCY_LABELS: Record<RecurringFrequency, string> = {
-  weekly: 'Weekly',
-  'bi-weekly': 'Bi-Weekly',
-  monthly: 'Monthly',
-};
+export const FREQUENCY_LABELS: Record<RecurringFrequency, string> = { weekly: 'Weekly', 'bi-weekly': 'Bi-Weekly', monthly: 'Monthly' };

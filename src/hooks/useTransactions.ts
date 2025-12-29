@@ -1,108 +1,276 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { Transaction, Category, DEFAULT_CATEGORIES, MonthlyData, CategorySummary, CHART_COLORS, Budget } from '@/types/finance';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { Transaction, Category, DEFAULT_CATEGORIES, MonthlyData, CategorySummary, CHART_COLORS, Budget, TransactionType, ActivityType } from '@/types/finance';
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
-const TRANSACTIONS_KEY = 'cashflow_transactions';
-const CATEGORIES_KEY = 'cashflow_categories';
-const BUDGETS_KEY = 'cashflow_budgets';
-
 export function useTransactions() {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const storedTransactions = localStorage.getItem(TRANSACTIONS_KEY);
-    const storedCategories = localStorage.getItem(CATEGORIES_KEY);
-    const storedBudgets = localStorage.getItem(BUDGETS_KEY);
+  // Fetch data from database
+  const fetchData = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions));
-    }
-    if (storedCategories) {
-      setCategories(JSON.parse(storedCategories));
-    } else {
-      localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
-    }
-    if (storedBudgets) {
-      setBudgets(JSON.parse(storedBudgets));
-    }
-    setIsLoading(false);
-  }, []);
+    try {
+      setIsLoading(true);
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
+      // Fetch transactions
+      const { data: transactionsData, error: transactionsError } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (transactionsError) throw transactionsError;
+
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('*');
+
+      if (categoriesError) throw categoriesError;
+
+      // Fetch budgets
+      const { data: budgetsData, error: budgetsError } = await supabase
+        .from('budgets')
+        .select('*');
+
+      if (budgetsError) throw budgetsError;
+
+      // Map DB data to app types
+      setTransactions(transactionsData?.map((t: any) => ({
+        id: t.id,
+        date: t.date,
+        type: t.type as TransactionType,
+        category: t.category_name,
+        description: t.description || '',
+        amount: Number(t.amount),
+        activityType: t.activity_type as ActivityType | undefined,
+        installmentId: t.installment_id,
+        createdAt: t.created_at,
+      })) || []);
+
+      // Merge DB categories with defaults
+      const dbCategories = categoriesData?.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        type: c.type as TransactionType,
+        color: c.color,
+      })) || [];
+      
+      // Use defaults if user has no custom categories yet
+      setCategories(dbCategories.length > 0 ? dbCategories : DEFAULT_CATEGORIES);
+
+      setBudgets(budgetsData?.map((b: any) => ({
+        id: b.id,
+        categoryId: b.category_id,
+        amount: Number(b.amount),
+        month: b.month,
+      })) || []);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [transactions, isLoading]);
+  }, [user]);
 
   useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-    }
-  }, [categories, isLoading]);
-
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(BUDGETS_KEY, JSON.stringify(budgets));
-    }
-  }, [budgets, isLoading]);
+    fetchData();
+  }, [fetchData]);
 
   // CRUD operations
-  const addTransaction = useCallback((transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
+  const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('transactions')
+      .insert([{
+        user_id: user.id,
+        date: transaction.date,
+        type: transaction.type,
+        category_name: transaction.category,
+        description: transaction.description,
+        amount: transaction.amount,
+        activity_type: transaction.activityType,
+        installment_id: transaction.installmentId,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding transaction:', error);
+      return null;
+    }
+
     const newTransaction: Transaction = {
-      ...transaction,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
+      id: data.id,
+      date: data.date,
+      type: data.type as TransactionType,
+      category: data.category_name,
+      description: data.description || '',
+      amount: Number(data.amount),
+      activityType: data.activity_type as ActivityType | undefined,
+      installmentId: data.installment_id,
+      createdAt: data.created_at,
     };
+
     setTransactions(prev => [newTransaction, ...prev]);
     return newTransaction;
-  }, []);
+  }, [user]);
 
-  const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {
+  const updateTransaction = useCallback(async (id: string, updates: Partial<Transaction>) => {
+    const dbUpdates: any = {};
+    if (updates.date) dbUpdates.date = updates.date;
+    if (updates.type) dbUpdates.type = updates.type;
+    if (updates.category) dbUpdates.category_name = updates.category;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
+    if (updates.activityType) dbUpdates.activity_type = updates.activityType;
+
+    const { error } = await supabase
+      .from('transactions')
+      .update(dbUpdates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating transaction:', error);
+      return;
+    }
+
     setTransactions(prev =>
       prev.map(t => (t.id === id ? { ...t, ...updates } : t))
     );
   }, []);
 
-  const deleteTransaction = useCallback((id: string) => {
+  const deleteTransaction = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting transaction:', error);
+      return;
+    }
+
     setTransactions(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  const deleteTransactionsByInstallmentId = useCallback((installmentId: string) => {
+  const deleteTransactionsByInstallmentId = useCallback(async (installmentId: string) => {
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('installment_id', installmentId);
+
+    if (error) {
+      console.error('Error deleting transactions:', error);
+      return;
+    }
+
     setTransactions(prev => prev.filter(t => t.installmentId !== installmentId));
   }, []);
 
-  const addCategory = useCallback((category: Omit<Category, 'id'>) => {
+  const addCategory = useCallback(async (category: Omit<Category, 'id'>) => {
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([{
+        user_id: user.id,
+        name: category.name,
+        type: category.type,
+        color: category.color,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding category:', error);
+      return null;
+    }
+
     const newCategory: Category = {
-      ...category,
-      id: crypto.randomUUID(),
+      id: data.id,
+      name: data.name,
+      type: data.type as TransactionType,
+      color: data.color,
     };
+
     setCategories(prev => [...prev, newCategory]);
     return newCategory;
-  }, []);
+  }, [user]);
 
   // Budget CRUD operations
-  const addBudget = useCallback((budget: Omit<Budget, 'id'>) => {
+  const addBudget = useCallback(async (budget: Omit<Budget, 'id'>) => {
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('budgets')
+      .insert([{
+        user_id: user.id,
+        category_id: budget.categoryId,
+        amount: budget.amount,
+        month: budget.month,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding budget:', error);
+      return null;
+    }
+
     const newBudget: Budget = {
-      ...budget,
-      id: crypto.randomUUID(),
+      id: data.id,
+      categoryId: data.category_id,
+      amount: Number(data.amount),
+      month: data.month,
     };
+
     setBudgets(prev => [...prev, newBudget]);
     return newBudget;
-  }, []);
+  }, [user]);
 
-  const updateBudget = useCallback((id: string, updates: Partial<Budget>) => {
+  const updateBudget = useCallback(async (id: string, updates: Partial<Budget>) => {
+    const dbUpdates: any = {};
+    if (updates.categoryId) dbUpdates.category_id = updates.categoryId;
+    if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
+    if (updates.month) dbUpdates.month = updates.month;
+
+    const { error } = await supabase
+      .from('budgets')
+      .update(dbUpdates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating budget:', error);
+      return;
+    }
+
     setBudgets(prev =>
       prev.map(b => (b.id === id ? { ...b, ...updates } : b))
     );
   }, []);
 
-  const deleteBudget = useCallback((id: string) => {
+  const deleteBudget = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('budgets')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting budget:', error);
+      return;
+    }
+
     setBudgets(prev => prev.filter(b => b.id !== id));
   }, []);
 
@@ -128,23 +296,44 @@ export function useTransactions() {
   }, [transactions]);
 
   // CSV Import
-  const importFromCSV = useCallback((file: File): Promise<number> => {
+  const importFromCSV = useCallback(async (file: File): Promise<number> => {
+    if (!user) return 0;
+
     return new Promise((resolve, reject) => {
       Papa.parse(file, {
         header: true,
-        complete: (results) => {
-          const imported: Transaction[] = results.data
+        complete: async (results) => {
+          const toInsert = results.data
             .filter((row: any) => row.Date && row.Amount)
             .map((row: any) => ({
-              id: crypto.randomUUID(),
+              user_id: user.id,
               date: row.Date,
               type: row.Type?.toLowerCase() === 'income' ? 'income' : 'expense',
-              category: row.Category || 'other-expense',
+              category_name: row.Category || 'other-expense',
               description: row.Description || '',
               amount: parseFloat(row.Amount) || 0,
-              createdAt: new Date().toISOString(),
             }));
-          
+
+          const { data, error } = await supabase
+            .from('transactions')
+            .insert(toInsert)
+            .select();
+
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          const imported = data?.map((t: any) => ({
+            id: t.id,
+            date: t.date,
+            type: t.type as TransactionType,
+            category: t.category_name,
+            description: t.description || '',
+            amount: Number(t.amount),
+            createdAt: t.created_at,
+          })) || [];
+
           setTransactions(prev => [...imported, ...prev]);
           resolve(imported.length);
         },
@@ -153,7 +342,7 @@ export function useTransactions() {
         },
       });
     });
-  }, []);
+  }, [user]);
 
   // Analytics
   const getTotals = useCallback((startDate?: Date, endDate?: Date) => {

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { Installment, InstallmentStatus, Transaction } from '@/types/finance';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { Installment, InstallmentStatus, InstallmentProvider, Transaction } from '@/types/finance';
 import { format, parseISO, isBefore, startOfDay } from 'date-fns';
-
-const INSTALLMENTS_KEY = 'cashflow_installments';
 
 interface UseInstallmentsOptions {
   onPaymentComplete?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
@@ -11,62 +11,156 @@ interface UseInstallmentsOptions {
 }
 
 export function useInstallments(options?: UseInstallmentsOptions) {
+  const { user } = useAuth();
   const [installments, setInstallments] = useState<Installment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(INSTALLMENTS_KEY);
-    if (stored) {
-      setInstallments(JSON.parse(stored));
+  // Fetch data from database
+  const fetchData = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
-  }, []);
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(INSTALLMENTS_KEY, JSON.stringify(installments));
+    try {
+      setIsLoading(true);
+
+      const { data, error } = await supabase
+        .from('installments')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setInstallments(data?.map((i: any) => ({
+        id: i.id,
+        itemName: i.item_name,
+        totalAmount: Number(i.total_amount),
+        downPayment: Number(i.down_payment),
+        remainingAmount: Number(i.remaining_amount),
+        monthlyPayment: Number(i.monthly_payment),
+        totalPayments: i.total_payments,
+        completedPayments: i.completed_payments,
+        nextDueDate: i.next_due_date,
+        status: i.status as InstallmentStatus,
+        interestRate: Number(i.interest_rate),
+        provider: i.provider as InstallmentProvider,
+        createdAt: i.created_at,
+        updatedAt: i.updated_at,
+      })) || []);
+
+    } catch (error) {
+      console.error('Error fetching installments:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [installments, isLoading]);
+  }, [user]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   // Auto-update status based on due dates
-  const updateStatuses = useCallback(() => {
+  const updateStatuses = useCallback(async () => {
     const today = startOfDay(new Date());
-    setInstallments(prev => prev.map(inst => {
-      if (inst.status === 'completed') return inst;
+    
+    for (const inst of installments) {
+      if (inst.status === 'completed') continue;
       
       const dueDate = parseISO(inst.nextDueDate);
-      if (isBefore(dueDate, today) && inst.completedPayments < inst.totalPayments) {
-        return { ...inst, status: 'overdue' as InstallmentStatus };
+      if (isBefore(dueDate, today) && inst.completedPayments < inst.totalPayments && inst.status !== 'overdue') {
+        await supabase
+          .from('installments')
+          .update({ status: 'overdue' })
+          .eq('id', inst.id);
       }
-      return inst;
-    }));
-  }, []);
+    }
+    
+    // Refresh after status updates
+    fetchData();
+  }, [installments, fetchData]);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && installments.length > 0) {
       updateStatuses();
     }
-  }, [isLoading, updateStatuses]);
+  }, [isLoading]);
 
-  const addInstallment = useCallback((installment: Omit<Installment, 'id' | 'createdAt' | 'updatedAt' | 'remainingAmount' | 'status'>) => {
+  const addInstallment = useCallback(async (installment: Omit<Installment, 'id' | 'createdAt' | 'updatedAt' | 'remainingAmount' | 'status'>) => {
+    if (!user) return null;
+
     const remainingAmount = installment.totalAmount - installment.downPayment - (installment.monthlyPayment * installment.completedPayments);
     const status: InstallmentStatus = installment.completedPayments >= installment.totalPayments ? 'completed' : 'active';
-    
+
+    const { data, error } = await supabase
+      .from('installments')
+      .insert([{
+        user_id: user.id,
+        item_name: installment.itemName,
+        total_amount: installment.totalAmount,
+        down_payment: installment.downPayment,
+        remaining_amount: remainingAmount,
+        monthly_payment: installment.monthlyPayment,
+        total_payments: installment.totalPayments,
+        completed_payments: installment.completedPayments,
+        next_due_date: installment.nextDueDate,
+        status,
+        interest_rate: installment.interestRate,
+        provider: installment.provider,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding installment:', error);
+      return null;
+    }
+
     const newInstallment: Installment = {
-      ...installment,
-      id: crypto.randomUUID(),
-      remainingAmount,
-      status,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      id: data.id,
+      itemName: data.item_name,
+      totalAmount: Number(data.total_amount),
+      downPayment: Number(data.down_payment),
+      remainingAmount: Number(data.remaining_amount),
+      monthlyPayment: Number(data.monthly_payment),
+      totalPayments: data.total_payments,
+      completedPayments: data.completed_payments,
+      nextDueDate: data.next_due_date,
+      status: data.status as InstallmentStatus,
+      interestRate: Number(data.interest_rate),
+      provider: data.provider as InstallmentProvider,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
     };
+
     setInstallments(prev => [newInstallment, ...prev]);
     return newInstallment;
-  }, []);
+  }, [user]);
 
-  const updateInstallment = useCallback((id: string, updates: Partial<Installment>) => {
+  const updateInstallment = useCallback(async (id: string, updates: Partial<Installment>) => {
+    const dbUpdates: any = {};
+    if (updates.itemName) dbUpdates.item_name = updates.itemName;
+    if (updates.totalAmount !== undefined) dbUpdates.total_amount = updates.totalAmount;
+    if (updates.downPayment !== undefined) dbUpdates.down_payment = updates.downPayment;
+    if (updates.remainingAmount !== undefined) dbUpdates.remaining_amount = updates.remainingAmount;
+    if (updates.monthlyPayment !== undefined) dbUpdates.monthly_payment = updates.monthlyPayment;
+    if (updates.totalPayments !== undefined) dbUpdates.total_payments = updates.totalPayments;
+    if (updates.completedPayments !== undefined) dbUpdates.completed_payments = updates.completedPayments;
+    if (updates.nextDueDate) dbUpdates.next_due_date = updates.nextDueDate;
+    if (updates.status) dbUpdates.status = updates.status;
+    if (updates.interestRate !== undefined) dbUpdates.interest_rate = updates.interestRate;
+    if (updates.provider) dbUpdates.provider = updates.provider;
+
+    const { error } = await supabase
+      .from('installments')
+      .update(dbUpdates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating installment:', error);
+      return;
+    }
+
     setInstallments(prev => prev.map(inst => {
       if (inst.id !== id) return inst;
       
@@ -87,15 +181,26 @@ export function useInstallments(options?: UseInstallmentsOptions) {
     }));
   }, []);
 
-  const deleteInstallment = useCallback((id: string) => {
+  const deleteInstallment = useCallback(async (id: string) => {
     // Delete related transactions first
     if (options?.onInstallmentDelete) {
       options.onInstallmentDelete(id);
     }
+
+    const { error } = await supabase
+      .from('installments')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting installment:', error);
+      return;
+    }
+
     setInstallments(prev => prev.filter(inst => inst.id !== id));
   }, [options]);
 
-  const markPaymentComplete = useCallback((id: string) => {
+  const markPaymentComplete = useCallback(async (id: string) => {
     const installment = installments.find(inst => inst.id === id);
     if (!installment || installment.status === 'completed') return;
 
@@ -112,28 +217,22 @@ export function useInstallments(options?: UseInstallmentsOptions) {
       });
     }
 
-    setInstallments(prev => prev.map(inst => {
-      if (inst.id !== id) return inst;
-      
-      const newCompleted = Math.min(inst.completedPayments + 1, inst.totalPayments);
-      const newRemaining = inst.totalAmount - inst.downPayment - (inst.monthlyPayment * newCompleted);
-      const newStatus: InstallmentStatus = newCompleted >= inst.totalPayments ? 'completed' : 'active';
-      
-      // Calculate next due date (add 1 month)
-      const currentDue = parseISO(inst.nextDueDate);
-      const nextDue = new Date(currentDue);
-      nextDue.setMonth(nextDue.getMonth() + 1);
-      
-      return {
-        ...inst,
-        completedPayments: newCompleted,
-        remainingAmount: newRemaining,
-        status: newStatus,
-        nextDueDate: newCompleted >= inst.totalPayments ? inst.nextDueDate : format(nextDue, 'yyyy-MM-dd'),
-        updatedAt: new Date().toISOString(),
-      };
-    }));
-  }, [installments, options]);
+    const newCompleted = Math.min(installment.completedPayments + 1, installment.totalPayments);
+    const newRemaining = installment.totalAmount - installment.downPayment - (installment.monthlyPayment * newCompleted);
+    const newStatus: InstallmentStatus = newCompleted >= installment.totalPayments ? 'completed' : 'active';
+    
+    // Calculate next due date (add 1 month)
+    const currentDue = parseISO(installment.nextDueDate);
+    const nextDue = new Date(currentDue);
+    nextDue.setMonth(nextDue.getMonth() + 1);
+
+    await updateInstallment(id, {
+      completedPayments: newCompleted,
+      remainingAmount: newRemaining,
+      status: newStatus,
+      nextDueDate: newCompleted >= installment.totalPayments ? installment.nextDueDate : format(nextDue, 'yyyy-MM-dd'),
+    });
+  }, [installments, options, updateInstallment]);
 
   // CSV Export
   const exportToCSV = useCallback(() => {

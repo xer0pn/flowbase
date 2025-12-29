@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      assets: {
+        Row: {
+          created_at: string
+          id: string
+          monthly_income: number | null
+          name: string
+          type: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          monthly_income?: number | null
+          name: string
+          type: string
+          updated_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          monthly_income?: number | null
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      budgets: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          id: string
+          month: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          month: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          month?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_goals: {
         Row: {
           category: string | null
@@ -26,6 +124,7 @@ export type Database = {
           notes: string | null
           target_amount: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           category?: string | null
@@ -38,6 +137,7 @@ export type Database = {
           notes?: string | null
           target_amount: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           category?: string | null
@@ -50,8 +150,300 @@ export type Database = {
           notes?: string | null
           target_amount?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
+      }
+      installments: {
+        Row: {
+          completed_payments: number
+          created_at: string
+          down_payment: number
+          id: string
+          interest_rate: number
+          item_name: string
+          monthly_payment: number
+          next_due_date: string
+          provider: string
+          remaining_amount: number
+          status: string
+          total_amount: number
+          total_payments: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_payments?: number
+          created_at?: string
+          down_payment?: number
+          id?: string
+          interest_rate?: number
+          item_name: string
+          monthly_payment: number
+          next_due_date: string
+          provider: string
+          remaining_amount: number
+          status?: string
+          total_amount: number
+          total_payments: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_payments?: number
+          created_at?: string
+          down_payment?: number
+          id?: string
+          interest_rate?: number
+          item_name?: string
+          monthly_payment?: number
+          next_due_date?: string
+          provider?: string
+          remaining_amount?: number
+          status?: string
+          total_amount?: number
+          total_payments?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      liabilities: {
+        Row: {
+          amount_owed: number
+          created_at: string
+          id: string
+          monthly_payment: number
+          name: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_owed: number
+          created_at?: string
+          id?: string
+          monthly_payment: number
+          name: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_owed?: number
+          created_at?: string
+          id?: string
+          monthly_payment?: number
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_holdings: {
+        Row: {
+          asset_name: string
+          asset_type: string
+          created_at: string
+          id: string
+          notes: string | null
+          purchase_date: string
+          purchase_price: number
+          quantity: number
+          ticker: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_name: string
+          asset_type: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_date: string
+          purchase_price: number
+          quantity: number
+          ticker: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_name?: string
+          asset_type?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_date?: string
+          purchase_price?: number
+          quantity?: number
+          ticker?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recurring_expenses: {
+        Row: {
+          activity_type: string | null
+          amount: number
+          category_id: string | null
+          created_at: string
+          day_of_month: number
+          frequency: string
+          id: string
+          is_active: boolean
+          last_generated_date: string | null
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          day_of_month: number
+          frequency: string
+          id?: string
+          is_active?: boolean
+          last_generated_date?: string | null
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          day_of_month?: number
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_generated_date?: string | null
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recurring_income: {
+        Row: {
+          activity_type: string | null
+          amount: number
+          category_id: string | null
+          created_at: string
+          day_of_month: number
+          frequency: string
+          id: string
+          is_active: boolean
+          last_generated_date: string | null
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          day_of_month: number
+          frequency: string
+          id?: string
+          is_active?: boolean
+          last_generated_date?: string | null
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          day_of_month?: number
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_generated_date?: string | null
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_income_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          activity_type: string | null
+          amount: number
+          category_id: string | null
+          category_name: string
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          installment_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          amount: number
+          category_id?: string | null
+          category_name: string
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          installment_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          amount?: number
+          category_id?: string | null
+          category_name?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          installment_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
