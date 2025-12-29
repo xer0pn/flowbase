@@ -120,6 +120,21 @@ export interface RecurringIncome {
   updatedAt: string;
 }
 
+// Recurring Expense
+export interface RecurringExpense {
+  id: string;
+  name: string;
+  categoryId: string;
+  amount: number;
+  frequency: RecurringFrequency;
+  dayOfMonth: number;
+  isActive: boolean;
+  lastGeneratedDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PriceData {
   ticker: string;
   price: number;
