@@ -86,7 +86,7 @@ export function useRecurringIncome(options?: UseRecurringIncomeOptions) {
           category: source.categoryId,
           description: `${source.name} (recurring)`,
           amount: source.amount,
-          activityType: 'operating',
+          activityType: source.activityType || 'operating',
         });
 
         generatedCount++;
@@ -119,7 +119,7 @@ export function useRecurringIncome(options?: UseRecurringIncomeOptions) {
       category: source.categoryId,
       description: `${source.name} (manual entry)`,
       amount: source.amount,
-      activityType: 'operating',
+      activityType: source.activityType || 'operating',
     });
 
     setSources(prev => prev.map(s =>

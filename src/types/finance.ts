@@ -114,6 +114,7 @@ export interface RecurringIncome {
   frequency: RecurringFrequency;
   dayOfMonth: number;
   isActive: boolean;
+  activityType?: ActivityType;
   lastGeneratedDate?: string;
   notes?: string;
   createdAt: string;
@@ -129,6 +130,7 @@ export interface RecurringExpense {
   frequency: RecurringFrequency;
   dayOfMonth: number;
   isActive: boolean;
+  activityType?: ActivityType;
   lastGeneratedDate?: string;
   notes?: string;
   createdAt: string;

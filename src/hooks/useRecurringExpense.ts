@@ -86,7 +86,7 @@ export function useRecurringExpense(options?: UseRecurringExpenseOptions) {
           category: expense.categoryId,
           description: `${expense.name} (recurring)`,
           amount: expense.amount,
-          activityType: 'operating',
+          activityType: expense.activityType || 'operating',
         });
 
         generatedCount++;
@@ -119,7 +119,7 @@ export function useRecurringExpense(options?: UseRecurringExpenseOptions) {
       category: expense.categoryId,
       description: `${expense.name} (manual entry)`,
       amount: expense.amount,
-      activityType: 'operating',
+      activityType: expense.activityType || 'operating',
     });
 
     setExpenses(prev => prev.map(e =>

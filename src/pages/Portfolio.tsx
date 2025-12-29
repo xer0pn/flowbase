@@ -1,4 +1,5 @@
 import { usePortfolio } from '@/hooks/usePortfolio';
+import { useTransactions } from '@/hooks/useTransactions';
 import { PortfolioForm } from '@/components/PortfolioForm';
 import { PortfolioList } from '@/components/PortfolioList';
 import { PortfolioWidget } from '@/components/PortfolioWidget';
@@ -8,6 +9,8 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
 const Portfolio = () => {
+  const { addTransaction } = useTransactions();
+
   const {
     holdings,
     prices,
@@ -21,13 +24,18 @@ const Portfolio = () => {
     exportToCSV,
     getPortfolioSummary,
     getHoldingWithPrice,
-  } = usePortfolio();
+  } = usePortfolio({
+    onTransactionCreate: addTransaction,
+  });
 
   const summary = getPortfolioSummary();
 
-  const handleAddHolding = (holding: Parameters<typeof addHolding>[0]) => {
-    addHolding(holding);
-    toast.success('Holding added to portfolio');
+  const handleAddHolding = (holding: Parameters<typeof addHolding>[0], createTransaction: boolean) => {
+    addHolding(holding, createTransaction);
+    toast.success(createTransaction 
+      ? 'Holding added with investing transaction' 
+      : 'Holding added to portfolio'
+    );
   };
 
   const handleDelete = (id: string) => {

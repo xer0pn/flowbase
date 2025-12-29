@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Papa from 'papaparse';
-import { PortfolioHolding, PriceData } from '@/types/finance';
+import { PortfolioHolding, PriceData, Transaction } from '@/types/finance';
 import { format } from 'date-fns';
 
 const PORTFOLIO_KEY = 'cashflow_portfolio';
 const PRICES_CACHE_KEY = 'cashflow_prices_cache';
+
+interface UsePortfolioOptions {
+  onTransactionCreate?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
+}
 
 // CoinGecko ID mapping for common cryptos
 const CRYPTO_ID_MAP: Record<string, string> = {
@@ -24,7 +28,7 @@ const CRYPTO_ID_MAP: Record<string, string> = {
   LTC: 'litecoin',
 };
 
-export function usePortfolio() {
+export function usePortfolio(options?: UsePortfolioOptions) {
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -177,7 +181,10 @@ export function usePortfolio() {
   }, [holdings, prices, fetchCryptoPrices, fetchStockPrice]);
 
   // CRUD operations
-  const addHolding = useCallback((holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addHolding = useCallback((
+    holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>,
+    createTransaction: boolean = false
+  ) => {
     const newHolding: PortfolioHolding = {
       ...holding,
       ticker: holding.ticker.toUpperCase(),
@@ -186,8 +193,22 @@ export function usePortfolio() {
       updatedAt: new Date().toISOString(),
     };
     setHoldings(prev => [newHolding, ...prev]);
+
+    // Optionally create an investing expense transaction
+    if (createTransaction && options?.onTransactionCreate) {
+      const totalCost = holding.quantity * holding.purchasePrice;
+      options.onTransactionCreate({
+        date: holding.purchaseDate,
+        type: 'expense',
+        category: 'investments',
+        description: `Investment: ${holding.ticker} (${holding.quantity} shares)`,
+        amount: totalCost,
+        activityType: 'investing',
+      });
+    }
+
     return newHolding;
-  }, []);
+  }, [options]);
 
   const updateHolding = useCallback((id: string, updates: Partial<PortfolioHolding>) => {
     setHoldings(prev => prev.map(h => 
