@@ -206,7 +206,7 @@ const BillsCalendar = () => {
             onSelect={setSelectedDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
-            className="w-full pointer-events-auto"
+            className="w-full pointer-events-auto [&_.rdp-caption]:hidden [&_.rdp-nav]:hidden [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_.rdp-table]:w-full"
             modifiers={{
               hasEvent: (date) => {
                 const key = format(date, 'yyyy-MM-dd');
