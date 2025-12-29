@@ -54,6 +54,7 @@ export function useTransactions() {
         amount: Number(t.amount),
         activityType: t.activity_type as ActivityType | undefined,
         installmentId: t.installment_id,
+        receiptUrl: t.receipt_url,
         createdAt: t.created_at,
       })) || []);
 
@@ -134,6 +135,7 @@ export function useTransactions() {
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
     if (updates.activityType) dbUpdates.activity_type = updates.activityType;
+    if (updates.receiptUrl !== undefined) dbUpdates.receipt_url = updates.receiptUrl;
 
     const { error } = await supabase
       .from('transactions')

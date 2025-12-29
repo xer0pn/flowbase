@@ -132,6 +132,10 @@ const Index = () => {
     toast.success('Transaction updated');
   };
 
+  const handleReceiptUpdate = (id: string, receiptUrl: string | null) => {
+    updateTransaction(id, { receiptUrl });
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -259,6 +263,7 @@ const Index = () => {
             categories={categories}
             onDelete={handleDeleteTransaction}
             onUpdate={handleUpdateTransaction}
+            onReceiptUpdate={handleReceiptUpdate}
           />
         </section>
       </div>
