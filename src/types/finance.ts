@@ -102,6 +102,23 @@ export interface PortfolioHolding {
   updatedAt: string;
 }
 
+// Recurring Income
+export type RecurringFrequency = 'weekly' | 'bi-weekly' | 'monthly';
+
+export interface RecurringIncome {
+  id: string;
+  name: string;
+  categoryId: string;
+  amount: number;
+  frequency: RecurringFrequency;
+  dayOfMonth: number;
+  isActive: boolean;
+  lastGeneratedDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PriceData {
   ticker: string;
   price: number;
