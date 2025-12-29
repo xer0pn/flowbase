@@ -1,4 +1,5 @@
 export type TransactionType = 'income' | 'expense';
+export type ActivityType = 'operating' | 'investing' | 'financing';
 
 export interface Category {
   id: string;
@@ -14,6 +15,7 @@ export interface Transaction {
   category: string;
   description: string;
   amount: number;
+  activityType?: ActivityType;
   createdAt: string;
 }
 
@@ -37,6 +39,30 @@ export interface Budget {
   categoryId: string;
   amount: number;
   month: string; // Format: 'YYYY-MM'
+}
+
+// Asset types inspired by Cash Flow Quadrant
+export type AssetType = 'savings' | 'investments' | 'business' | 'real_estate' | 'other';
+export type LiabilityType = 'credit_card' | 'loan' | 'mortgage' | 'other';
+
+export interface Asset {
+  id: string;
+  name: string;
+  type: AssetType;
+  value: number;
+  monthlyIncome?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Liability {
+  id: string;
+  name: string;
+  type: LiabilityType;
+  amountOwed: number;
+  monthlyPayment: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Default categories inspired by Cash Flow Quadrant
@@ -67,6 +93,21 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: 'taxes', name: 'Taxes', type: 'expense' },
   { id: 'other-expense', name: 'Other Expense', type: 'expense' },
 ];
+
+export const ASSET_TYPE_LABELS: Record<AssetType, string> = {
+  savings: 'Savings',
+  investments: 'Investments',
+  business: 'Business',
+  real_estate: 'Real Estate',
+  other: 'Other',
+};
+
+export const LIABILITY_TYPE_LABELS: Record<LiabilityType, string> = {
+  credit_card: 'Credit Card',
+  loan: 'Loan',
+  mortgage: 'Mortgage',
+  other: 'Other',
+};
 
 // Chart colors for categories
 export const CHART_COLORS = [

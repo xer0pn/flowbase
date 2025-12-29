@@ -9,6 +9,7 @@ import { CSVActions } from '@/components/CSVActions';
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
 import { BudgetForm } from '@/components/BudgetForm';
 import { BudgetProgress } from '@/components/BudgetProgress';
+import { IncomeGrowthTracker } from '@/components/IncomeGrowthTracker';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { TrendingUp, TrendingDown, Wallet, Activity } from 'lucide-react';
 import { toast } from 'sonner';
@@ -143,26 +144,21 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b-2 border-border">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">CashFlow Tracker</h1>
-              <p className="text-muted-foreground mt-1">Track your income and expenses</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="border-2 border-border px-4 py-2 font-mono text-sm">
-                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </div>
-              <ThemeToggle />
-            </div>
+    <div className="bg-background">
+      {/* Page Header */}
+      <div className="container py-6 border-b-2 border-border hidden lg:block">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Track your income and expenses</p>
+          </div>
+          <div className="border-2 border-border px-4 py-2 font-mono text-sm">
+            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="container py-8">
+      <div className="container py-8">
         {/* Stats Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
@@ -220,6 +216,11 @@ const Index = () => {
 
           {/* Middle Column - Charts */}
           <div className="lg:col-span-2 space-y-6">
+            <IncomeGrowthTracker
+              transactions={transactions}
+              categories={categories}
+            />
+            
             <BudgetProgress
               budgets={budgets}
               transactions={transactions}
@@ -260,7 +261,7 @@ const Index = () => {
             onUpdate={handleUpdateTransaction}
           />
         </section>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="border-t-2 border-border mt-12">
