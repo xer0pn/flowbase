@@ -7,6 +7,8 @@ import { CashFlowChart } from '@/components/CashFlowChart';
 import { CategoryBreakdown } from '@/components/CategoryBreakdown';
 import { CSVActions } from '@/components/CSVActions';
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
+import { BudgetForm } from '@/components/BudgetForm';
+import { BudgetProgress } from '@/components/BudgetProgress';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { TrendingUp, TrendingDown, Wallet, Activity } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,14 +18,17 @@ const Index = () => {
   const {
     transactions,
     categories,
+    budgets,
     isLoading,
     addTransaction,
+    updateTransaction,
     deleteTransaction,
+    addBudget,
+    deleteBudget,
     exportToCSV,
     importFromCSV,
     getTotals,
     getMonthlyData,
-    getCategorySummary,
   } = useTransactions();
 
   const [dateRange, setDateRange] = useState<DateRange>(null);
@@ -69,8 +74,9 @@ const Index = () => {
       'hsl(var(--chart-5))',
     ];
     return Object.entries(categoryTotals)
-      .map(([category, amount], index) => ({
-        category: categories.find(c => c.id === category)?.name || category,
+      .map(([categoryId, amount], index) => ({
+        category: categories.find(c => c.id === categoryId)?.name || categoryId,
+        categoryId,
         amount,
         percentage: total > 0 ? (amount / total) * 100 : 0,
         color: CHART_COLORS[index % CHART_COLORS.length],
@@ -93,8 +99,9 @@ const Index = () => {
       'hsl(var(--chart-5))',
     ];
     return Object.entries(categoryTotals)
-      .map(([category, amount], index) => ({
-        category: categories.find(c => c.id === category)?.name || category,
+      .map(([categoryId, amount], index) => ({
+        category: categories.find(c => c.id === categoryId)?.name || categoryId,
+        categoryId,
         amount,
         percentage: total > 0 ? (amount / total) * 100 : 0,
         color: CHART_COLORS[index % CHART_COLORS.length],
@@ -117,6 +124,11 @@ const Index = () => {
   const handleDeleteTransaction = (id: string) => {
     deleteTransaction(id);
     toast.success('Transaction deleted');
+  };
+
+  const handleUpdateTransaction = (id: string, updates: Parameters<typeof updateTransaction>[1]) => {
+    updateTransaction(id, updates);
+    toast.success('Transaction updated');
   };
 
   if (isLoading) {
@@ -189,6 +201,12 @@ const Index = () => {
               categories={categories}
               onSubmit={handleAddTransaction}
             />
+            <BudgetForm
+              categories={categories}
+              budgets={budgets}
+              onAddBudget={addBudget}
+              onDeleteBudget={deleteBudget}
+            />
             <DateRangeFilter
               value={dateRange}
               onChange={setDateRange}
@@ -202,6 +220,12 @@ const Index = () => {
 
           {/* Middle Column - Charts */}
           <div className="lg:col-span-2 space-y-6">
+            <BudgetProgress
+              budgets={budgets}
+              transactions={transactions}
+              categories={categories}
+            />
+            
             <CashFlowChart data={monthlyData} />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -233,6 +257,7 @@ const Index = () => {
             transactions={filteredTransactions}
             categories={categories}
             onDelete={handleDeleteTransaction}
+            onUpdate={handleUpdateTransaction}
           />
         </section>
       </main>
