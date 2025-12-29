@@ -206,7 +206,7 @@ const BillsCalendar = () => {
             onSelect={setSelectedDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
-            className="w-full pointer-events-auto [&_.rdp-caption]:hidden [&_.rdp-nav]:hidden [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_.rdp-table]:w-full"
+            className="w-full pointer-events-auto [&_.rdp-caption]:hidden [&_.rdp-nav]:hidden [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_.rdp-table]:w-full [&_.rdp-head_cell]:text-base [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:py-3 [&_.rdp-cell]:p-1 [&_.rdp-day]:h-14 [&_.rdp-day]:w-full [&_.rdp-day]:text-base"
             modifiers={{
               hasEvent: (date) => {
                 const key = format(date, 'yyyy-MM-dd');
@@ -225,12 +225,12 @@ const BillsCalendar = () => {
                 
                 return (
                   <div className="relative w-full h-full flex flex-col items-center justify-center">
-                    <span>{date.getDate()}</span>
+                    <span className="text-lg">{date.getDate()}</span>
                     {events && (
-                      <div className="flex gap-0.5 mt-0.5">
-                        {events.hasIncome && <div className="w-1.5 h-1.5 rounded-full bg-income" />}
-                        {events.hasExpense && <div className="w-1.5 h-1.5 rounded-full bg-expense" />}
-                        {events.hasInstallment && <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />}
+                      <div className="flex gap-1 mt-1">
+                        {events.hasIncome && <div className="w-2 h-2 rounded-full bg-income" />}
+                        {events.hasExpense && <div className="w-2 h-2 rounded-full bg-expense" />}
+                        {events.hasInstallment && <div className="w-2 h-2 rounded-full bg-orange-500" />}
                       </div>
                     )}
                   </div>
