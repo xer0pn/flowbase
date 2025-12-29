@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { useTransactions } from '@/hooks/useTransactions';
 import { StatCard } from '@/components/StatCard';
 import { TransactionForm } from '@/components/TransactionForm';
@@ -5,9 +6,11 @@ import { TransactionList } from '@/components/TransactionList';
 import { CashFlowChart } from '@/components/CashFlowChart';
 import { CategoryBreakdown } from '@/components/CategoryBreakdown';
 import { CSVActions } from '@/components/CSVActions';
+import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { TrendingUp, TrendingDown, Wallet, Activity } from 'lucide-react';
 import { toast } from 'sonner';
+import { parseISO, isWithinInterval } from 'date-fns';
 
 const Index = () => {
   const {
@@ -21,14 +24,86 @@ const Index = () => {
     getTotals,
     getMonthlyData,
     getCategorySummary,
-    getCurrentMonthTotals,
   } = useTransactions();
 
-  const currentMonthTotals = getCurrentMonthTotals();
+  const [dateRange, setDateRange] = useState<DateRange>(null);
+
+  // Filter transactions based on date range
+  const filteredTransactions = useMemo(() => {
+    if (!dateRange) return transactions;
+    return transactions.filter(t => {
+      const date = parseISO(t.date);
+      return isWithinInterval(date, { start: dateRange.from, end: dateRange.to });
+    });
+  }, [transactions, dateRange]);
+
+  // Calculate totals based on filtered transactions
+  const filteredTotals = useMemo(() => {
+    const income = filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expenses = filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+    return {
+      income,
+      expenses,
+      cashFlow: income - expenses,
+      transactionCount: filteredTransactions.length,
+    };
+  }, [filteredTransactions]);
+
+  // Get category summaries for filtered data
+  const filteredExpenseBreakdown = useMemo(() => {
+    const filtered = filteredTransactions.filter(t => t.type === 'expense');
+    const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+    const categoryTotals: Record<string, number> = {};
+    filtered.forEach(t => {
+      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    });
+    const CHART_COLORS = [
+      'hsl(var(--chart-1))',
+      'hsl(var(--chart-2))',
+      'hsl(var(--chart-3))',
+      'hsl(var(--chart-4))',
+      'hsl(var(--chart-5))',
+    ];
+    return Object.entries(categoryTotals)
+      .map(([category, amount], index) => ({
+        category: categories.find(c => c.id === category)?.name || category,
+        amount,
+        percentage: total > 0 ? (amount / total) * 100 : 0,
+        color: CHART_COLORS[index % CHART_COLORS.length],
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [filteredTransactions, categories]);
+
+  const filteredIncomeBreakdown = useMemo(() => {
+    const filtered = filteredTransactions.filter(t => t.type === 'income');
+    const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+    const categoryTotals: Record<string, number> = {};
+    filtered.forEach(t => {
+      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    });
+    const CHART_COLORS = [
+      'hsl(var(--chart-1))',
+      'hsl(var(--chart-2))',
+      'hsl(var(--chart-3))',
+      'hsl(var(--chart-4))',
+      'hsl(var(--chart-5))',
+    ];
+    return Object.entries(categoryTotals)
+      .map(([category, amount], index) => ({
+        category: categories.find(c => c.id === category)?.name || category,
+        amount,
+        percentage: total > 0 ? (amount / total) * 100 : 0,
+        color: CHART_COLORS[index % CHART_COLORS.length],
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [filteredTransactions, categories]);
+
   const allTimeTotals = getTotals();
   const monthlyData = getMonthlyData(6);
-  const expenseBreakdown = getCategorySummary('expense');
-  const incomeBreakdown = getCategorySummary('income');
 
   const formatCurrency = (value: number) => {
     return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -79,23 +154,23 @@ const Index = () => {
         {/* Stats Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
-            title="This Month Income"
-            value={formatCurrency(currentMonthTotals.income)}
+            title={dateRange ? "Filtered Income" : "All Time Income"}
+            value={formatCurrency(filteredTotals.income)}
             icon={TrendingUp}
             variant="income"
           />
           <StatCard
-            title="This Month Expenses"
-            value={formatCurrency(currentMonthTotals.expenses)}
+            title={dateRange ? "Filtered Expenses" : "All Time Expenses"}
+            value={formatCurrency(filteredTotals.expenses)}
             icon={TrendingDown}
             variant="expense"
           />
           <StatCard
             title="Cash Flow"
-            value={formatCurrency(currentMonthTotals.cashFlow)}
-            subtitle={currentMonthTotals.cashFlow >= 0 ? 'Positive' : 'Negative'}
+            value={formatCurrency(filteredTotals.cashFlow)}
+            subtitle={filteredTotals.cashFlow >= 0 ? 'Positive' : 'Negative'}
             icon={Activity}
-            variant={currentMonthTotals.cashFlow >= 0 ? 'income' : 'expense'}
+            variant={filteredTotals.cashFlow >= 0 ? 'income' : 'expense'}
           />
           <StatCard
             title="All Time Net"
@@ -108,11 +183,15 @@ const Index = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Form & CSV */}
+          {/* Left Column - Form, Filter & CSV */}
           <div className="space-y-6">
             <TransactionForm
               categories={categories}
               onSubmit={handleAddTransaction}
+            />
+            <DateRangeFilter
+              value={dateRange}
+              onChange={setDateRange}
             />
             <CSVActions
               onExport={exportToCSV}
@@ -127,12 +206,12 @@ const Index = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <CategoryBreakdown
-                data={expenseBreakdown}
+                data={filteredExpenseBreakdown}
                 title="Expense Breakdown"
                 emptyMessage="No expenses recorded"
               />
               <CategoryBreakdown
-                data={incomeBreakdown}
+                data={filteredIncomeBreakdown}
                 title="Income Sources"
                 emptyMessage="No income recorded"
               />
@@ -142,9 +221,16 @@ const Index = () => {
 
         {/* Transaction History */}
         <section className="mt-8">
-          <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Transactions</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+              {dateRange ? 'Filtered Transactions' : 'All Transactions'}
+            </h2>
+            <span className="text-sm text-muted-foreground font-mono">
+              {filteredTotals.transactionCount} transactions
+            </span>
+          </div>
           <TransactionList
-            transactions={transactions}
+            transactions={filteredTransactions}
             categories={categories}
             onDelete={handleDeleteTransaction}
           />
