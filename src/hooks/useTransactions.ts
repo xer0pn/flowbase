@@ -1,20 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { Transaction, Category, DEFAULT_CATEGORIES, MonthlyData, CategorySummary, CHART_COLORS } from '@/types/finance';
+import { Transaction, Category, DEFAULT_CATEGORIES, MonthlyData, CategorySummary, CHART_COLORS, Budget } from '@/types/finance';
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
 const TRANSACTIONS_KEY = 'cashflow_transactions';
 const CATEGORIES_KEY = 'cashflow_categories';
+const BUDGETS_KEY = 'cashflow_budgets';
 
 export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load from localStorage on mount
   useEffect(() => {
     const storedTransactions = localStorage.getItem(TRANSACTIONS_KEY);
     const storedCategories = localStorage.getItem(CATEGORIES_KEY);
+    const storedBudgets = localStorage.getItem(BUDGETS_KEY);
 
     if (storedTransactions) {
       setTransactions(JSON.parse(storedTransactions));
@@ -23,6 +26,9 @@ export function useTransactions() {
       setCategories(JSON.parse(storedCategories));
     } else {
       localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
+    }
+    if (storedBudgets) {
+      setBudgets(JSON.parse(storedBudgets));
     }
     setIsLoading(false);
   }, []);
@@ -39,6 +45,12 @@ export function useTransactions() {
       localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
     }
   }, [categories, isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem(BUDGETS_KEY, JSON.stringify(budgets));
+    }
+  }, [budgets, isLoading]);
 
   // CRUD operations
   const addTransaction = useCallback((transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
@@ -68,6 +80,26 @@ export function useTransactions() {
     };
     setCategories(prev => [...prev, newCategory]);
     return newCategory;
+  }, []);
+
+  // Budget CRUD operations
+  const addBudget = useCallback((budget: Omit<Budget, 'id'>) => {
+    const newBudget: Budget = {
+      ...budget,
+      id: crypto.randomUUID(),
+    };
+    setBudgets(prev => [...prev, newBudget]);
+    return newBudget;
+  }, []);
+
+  const updateBudget = useCallback((id: string, updates: Partial<Budget>) => {
+    setBudgets(prev =>
+      prev.map(b => (b.id === id ? { ...b, ...updates } : b))
+    );
+  }, []);
+
+  const deleteBudget = useCallback((id: string) => {
+    setBudgets(prev => prev.filter(b => b.id !== id));
   }, []);
 
   // CSV Export
@@ -175,8 +207,9 @@ export function useTransactions() {
     });
 
     return Object.entries(categoryTotals)
-      .map(([category, amount], index) => ({
-        category: categories.find(c => c.id === category)?.name || category,
+      .map(([categoryId, amount], index) => ({
+        category: categories.find(c => c.id === categoryId)?.name || categoryId,
+        categoryId,
         amount,
         percentage: total > 0 ? (amount / total) * 100 : 0,
         color: CHART_COLORS[index % CHART_COLORS.length],
@@ -192,11 +225,15 @@ export function useTransactions() {
   return {
     transactions,
     categories,
+    budgets,
     isLoading,
     addTransaction,
     updateTransaction,
     deleteTransaction,
     addCategory,
+    addBudget,
+    updateBudget,
+    deleteBudget,
     exportToCSV,
     importFromCSV,
     getTotals,

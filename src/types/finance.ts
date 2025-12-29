@@ -26,9 +26,17 @@ export interface MonthlyData {
 
 export interface CategorySummary {
   category: string;
+  categoryId: string;
   amount: number;
   percentage: number;
   color: string;
+}
+
+export interface Budget {
+  id: string;
+  categoryId: string;
+  amount: number;
+  month: string; // Format: 'YYYY-MM'
 }
 
 // Default categories inspired by Cash Flow Quadrant
