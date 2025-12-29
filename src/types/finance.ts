@@ -16,6 +16,7 @@ export interface Transaction {
   description: string;
   amount: number;
   activityType?: ActivityType;
+  installmentId?: string; // Links to source installment if created from payment
   createdAt: string;
 }
 
