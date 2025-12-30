@@ -1,8 +1,10 @@
 import { useTransactions } from '@/hooks/useTransactions';
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Wallet, TrendingDown, CreditCard, RotateCcw, Briefcase } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const CashFlowStatement = () => {
+  const { t } = useTranslation();
   const { transactions, categories } = useTransactions();
 
   const now = new Date();
@@ -41,13 +43,13 @@ const CashFlowStatement = () => {
   // Determine source type from description
   const getSourceInfo = (description: string) => {
     if (description.includes('(recurring)') || description.includes('(manual entry)')) {
-      return { icon: RotateCcw, label: 'Recurring', color: 'text-blue-500' };
+      return { icon: RotateCcw, label: t('recurring.title'), color: 'text-blue-500' };
     }
     if (description.includes('Investment:') || description.includes('Portfolio')) {
-      return { icon: Briefcase, label: 'Portfolio', color: 'text-purple-500' };
+      return { icon: Briefcase, label: t('portfolio.title'), color: 'text-purple-500' };
     }
     if (description.includes('Installment')) {
-      return { icon: CreditCard, label: 'Installment', color: 'text-orange-500' };
+      return { icon: CreditCard, label: t('installments.title'), color: 'text-orange-500' };
     }
     return null;
   };
@@ -70,17 +72,17 @@ const CashFlowStatement = () => {
         </div>
       ) : (
         <div className="space-y-2">
-          {txs.slice(0, 10).map((t) => {
-            const sourceInfo = getSourceInfo(t.description);
+          {txs.slice(0, 10).map((tx) => {
+            const sourceInfo = getSourceInfo(tx.description);
             return (
-              <div key={t.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+              <div key={tx.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
                 <div className="flex items-center gap-2">
-                  {t.type === 'income' ? (
+                  {tx.type === 'income' ? (
                     <ArrowUpRight className="h-4 w-4 text-income" />
                   ) : (
                     <ArrowDownRight className="h-4 w-4 text-expense" />
                   )}
-                  <span className="text-sm">{t.description || getCategoryName(t.category)}</span>
+                  <span className="text-sm">{tx.description || getCategoryName(tx.category)}</span>
                   {sourceInfo && (
                     <span className={`text-xs px-1.5 py-0.5 border ${sourceInfo.color} bg-muted/50 flex items-center gap-1`}>
                       <sourceInfo.icon className="h-3 w-3" />
@@ -88,15 +90,15 @@ const CashFlowStatement = () => {
                     </span>
                   )}
                 </div>
-                <span className={`font-mono text-sm ${t.type === 'income' ? 'text-income' : 'text-expense'}`}>
-                  {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                <span className={`font-mono text-sm ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
+                  {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                 </span>
               </div>
             );
           })}
           {txs.length > 10 && (
             <p className="text-xs text-muted-foreground text-center pt-2">
-              +{txs.length - 10} more transactions
+              +{txs.length - 10} {t('common.moreTransactions')}
             </p>
           )}
         </div>
@@ -111,7 +113,7 @@ const CashFlowStatement = () => {
           <TrendingUp className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cash Flow Statement</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('cashFlowStatement.title')}</h1>
           <p className="text-muted-foreground">{format(now, 'MMMM yyyy')}</p>
         </div>
       </div>
@@ -119,7 +121,7 @@ const CashFlowStatement = () => {
       {/* Summary */}
       <div className={`border-2 p-6 shadow-md mb-8 ${totalFlow >= 0 ? 'border-income bg-income/5' : 'border-expense bg-expense/5'}`}>
         <div className="flex justify-between items-center">
-          <span className="text-xl font-bold uppercase">Net Cash Flow</span>
+          <span className="text-xl font-bold uppercase">{t('cashFlowStatement.netCashFlow')}</span>
           <span className={`font-mono text-2xl font-bold ${totalFlow >= 0 ? 'text-income' : 'text-expense'}`}>
             {totalFlow >= 0 ? '+' : ''}{formatCurrency(totalFlow)}
           </span>
@@ -127,7 +129,7 @@ const CashFlowStatement = () => {
         <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-border/50">
           <div>
             <p className="text-xs text-muted-foreground uppercase flex items-center gap-1">
-              <Wallet className="h-3 w-3" /> Operating
+              <Wallet className="h-3 w-3" /> {t('cashFlowStatement.operating')}
             </p>
             <p className={`font-mono font-bold ${operatingFlow >= 0 ? 'text-income' : 'text-expense'}`}>
               {operatingFlow >= 0 ? '+' : ''}{formatCurrency(operatingFlow)}
@@ -135,7 +137,7 @@ const CashFlowStatement = () => {
           </div>
           <div>
             <p className="text-xs text-muted-foreground uppercase flex items-center gap-1">
-              <TrendingUp className="h-3 w-3" /> Investing
+              <TrendingUp className="h-3 w-3" /> {t('cashFlowStatement.investing')}
             </p>
             <p className={`font-mono font-bold ${investingFlow >= 0 ? 'text-income' : 'text-expense'}`}>
               {investingFlow >= 0 ? '+' : ''}{formatCurrency(investingFlow)}
@@ -143,7 +145,7 @@ const CashFlowStatement = () => {
           </div>
           <div>
             <p className="text-xs text-muted-foreground uppercase flex items-center gap-1">
-              <CreditCard className="h-3 w-3" /> Financing
+              <CreditCard className="h-3 w-3" /> {t('cashFlowStatement.financing')}
             </p>
             <p className={`font-mono font-bold ${financingFlow >= 0 ? 'text-income' : 'text-expense'}`}>
               {financingFlow >= 0 ? '+' : ''}{formatCurrency(financingFlow)}
@@ -155,51 +157,51 @@ const CashFlowStatement = () => {
       <div className="space-y-8">
         {renderTransactionList(
           operating, 
-          'Operating Activities', 
+          t('cashFlowStatement.operatingActivities'), 
           operatingFlow,
           <Wallet className="h-5 w-5" />,
-          'Day-to-day income and expenses (salary, groceries, bills)'
+          t('cashFlowStatement.operatingTip')
         )}
         {renderTransactionList(
           investing, 
-          'Investing Activities', 
+          t('cashFlowStatement.investingActivities'), 
           investingFlow,
           <TrendingDown className="h-5 w-5" />,
-          'Investment purchases, dividends, or capital gains'
+          t('cashFlowStatement.investingTip')
         )}
         {renderTransactionList(
           financing, 
-          'Financing Activities', 
+          t('cashFlowStatement.financingActivities'), 
           financingFlow,
           <CreditCard className="h-5 w-5" />,
-          'Loan payments, installments, or debt repayments'
+          t('cashFlowStatement.financingTip')
         )}
       </div>
 
       <div className="mt-8 p-4 border-2 border-dashed border-border">
         <p className="text-muted-foreground text-sm text-center mb-2">
-          <strong>How transactions are categorized:</strong>
+          <strong>{t('cashFlowStatement.howTransactionsCategorized')}</strong>
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex items-start gap-2">
             <Wallet className="h-4 w-4 mt-0.5 text-muted-foreground" />
             <div>
-              <p className="font-medium">Operating</p>
-              <p className="text-muted-foreground text-xs">Regular income/expenses, recurring bills</p>
+              <p className="font-medium">{t('cashFlowStatement.operating')}</p>
+              <p className="text-muted-foreground text-xs">{t('cashFlowStatement.operatingDescription')}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <TrendingUp className="h-4 w-4 mt-0.5 text-muted-foreground" />
             <div>
-              <p className="font-medium">Investing</p>
-              <p className="text-muted-foreground text-xs">Portfolio purchases, dividends</p>
+              <p className="font-medium">{t('cashFlowStatement.investing')}</p>
+              <p className="text-muted-foreground text-xs">{t('cashFlowStatement.investingDescription')}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <CreditCard className="h-4 w-4 mt-0.5 text-muted-foreground" />
             <div>
-              <p className="font-medium">Financing</p>
-              <p className="text-muted-foreground text-xs">Installment payments, loan repayments</p>
+              <p className="font-medium">{t('cashFlowStatement.financing')}</p>
+              <p className="text-muted-foreground text-xs">{t('cashFlowStatement.financingDescription')}</p>
             </div>
           </div>
         </div>
