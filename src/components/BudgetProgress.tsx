@@ -3,6 +3,7 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface BudgetProgressProps {
   budgets: Budget[];
@@ -11,6 +12,7 @@ interface BudgetProgressProps {
 }
 
 export function BudgetProgress({ budgets, transactions, categories }: BudgetProgressProps) {
+  const { t, i18n } = useTranslation();
   const currentMonth = format(new Date(), 'yyyy-MM');
   const currentMonthBudgets = budgets.filter(b => b.month === currentMonth);
 
@@ -46,7 +48,7 @@ export function BudgetProgress({ budgets, transactions, categories }: BudgetProg
   return (
     <div className="border-2 border-border p-6 shadow-sm">
       <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">
-        Budget Progress - {format(new Date(), 'MMMM')}
+        {t('dashboard.budgetProgress')} - {format(new Date(), 'MMMM', { locale: undefined })}
       </h3>
       <div className="space-y-4">
         {currentMonthBudgets.map((budget) => {
@@ -87,11 +89,11 @@ export function BudgetProgress({ budgets, transactions, categories }: BudgetProg
                 />
               </div>
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{percentage.toFixed(0)}% used</span>
+                <span>{percentage.toFixed(0)}% {t('common.used')}</span>
                 <span className={cn(isOverBudget && 'text-expense')}>
                   {isOverBudget
-                    ? `Over by ${formatCurrency(Math.abs(remaining))}`
-                    : `${formatCurrency(remaining)} remaining`}
+                    ? `${t('common.overBy')} ${formatCurrency(Math.abs(remaining))}`
+                    : `${formatCurrency(remaining)} ${t('common.remaining')}`}
                 </span>
               </div>
             </div>

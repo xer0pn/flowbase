@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CalendarIcon, X } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export type DateRange = {
   from: Date;
@@ -20,18 +21,19 @@ interface DateRangeFilterProps {
   onChange: (range: DateRange) => void;
 }
 
-const presets = [
-  { label: 'This Month', getValue: () => ({ from: startOfMonth(new Date()), to: endOfMonth(new Date()) }) },
-  { label: 'Last Month', getValue: () => ({ from: startOfMonth(subMonths(new Date(), 1)), to: endOfMonth(subMonths(new Date(), 1)) }) },
-  { label: 'Last 3 Months', getValue: () => ({ from: startOfMonth(subMonths(new Date(), 2)), to: endOfMonth(new Date()) }) },
-  { label: 'This Year', getValue: () => ({ from: startOfYear(new Date()), to: endOfYear(new Date()) }) },
-  { label: 'All Time', getValue: () => null },
-];
-
 export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [tempFrom, setTempFrom] = useState<Date | undefined>(value?.from);
   const [tempTo, setTempTo] = useState<Date | undefined>(value?.to);
+
+  const presets = [
+    { label: t('dateRanges.thisMonth'), getValue: () => ({ from: startOfMonth(new Date()), to: endOfMonth(new Date()) }) },
+    { label: t('dateRanges.lastMonth'), getValue: () => ({ from: startOfMonth(subMonths(new Date(), 1)), to: endOfMonth(subMonths(new Date(), 1)) }) },
+    { label: t('dateRanges.last3Months'), getValue: () => ({ from: startOfMonth(subMonths(new Date(), 2)), to: endOfMonth(new Date()) }) },
+    { label: t('dateRanges.thisYear'), getValue: () => ({ from: startOfYear(new Date()), to: endOfYear(new Date()) }) },
+    { label: t('dateRanges.allTime'), getValue: () => null },
+  ];
 
   const handlePresetClick = (preset: typeof presets[0]) => {
     const range = preset.getValue();
@@ -52,7 +54,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
   };
 
   const getActivePreset = () => {
-    if (!value) return 'All Time';
+    if (!value) return t('dateRanges.allTime');
     for (const preset of presets) {
       const presetValue = preset.getValue();
       if (!presetValue && !value) return preset.label;
@@ -62,13 +64,13 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
         return preset.label;
       }
     }
-    return 'Custom';
+    return t('dateRanges.custom');
   };
 
   return (
     <div className="border-2 border-border p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-bold uppercase tracking-wide">Date Range</h4>
+        <h4 className="text-sm font-bold uppercase tracking-wide">{t('dashboard.dateRange')}</h4>
         {value && (
           <Button
             variant="ghost"
@@ -77,7 +79,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
             className="h-6 px-2 text-xs"
           >
             <X className="h-3 w-3 mr-1" />
-            Clear
+            {t('common.clear')}
           </Button>
         )}
       </div>
@@ -116,7 +118,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                 {format(value.from, 'MMM d, yyyy')} - {format(value.to, 'MMM d, yyyy')}
               </span>
             ) : (
-              <span>Select custom range</span>
+              <span>{t('dashboard.selectCustomRange')}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -124,7 +126,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
           <div className="p-4 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide mb-2">From</p>
+                <p className="text-xs font-bold uppercase tracking-wide mb-2">{t('common.from')}</p>
                 <Calendar
                   mode="single"
                   selected={tempFrom}
@@ -133,7 +135,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
                 />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide mb-2">To</p>
+                <p className="text-xs font-bold uppercase tracking-wide mb-2">{t('common.to')}</p>
                 <Calendar
                   mode="single"
                   selected={tempTo}
@@ -148,7 +150,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
               disabled={!tempFrom || !tempTo}
               className="w-full font-bold uppercase tracking-wide"
             >
-              Apply Range
+              {t('dashboard.applyRange')}
             </Button>
           </div>
         </PopoverContent>
@@ -157,7 +159,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
       {/* Current Selection Display */}
       {value && (
         <p className="text-xs text-muted-foreground mt-2 font-mono">
-          Showing: {format(value.from, 'MMM d')} - {format(value.to, 'MMM d, yyyy')}
+          {t('common.showing')}: {format(value.from, 'MMM d')} - {format(value.to, 'MMM d, yyyy')}
         </p>
       )}
     </div>

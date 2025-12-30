@@ -40,13 +40,29 @@
     "monthlyIncome": "Monthly Income",
     "monthlyPayment": "Monthly Payment",
     "amountOwed": "Amount Owed",
-    "total": "total",
+    "total": "Total",
     "paused": "paused",
     "noUpcomingPayments": "No upcoming payments",
     "moreTransactions": "more transactions",
     "selectDate": "Select a date",
     "noPaymentsScheduled": "No payments scheduled",
-    "overdue": "Overdue"
+    "overdue": "Overdue",
+    "clear": "Clear",
+    "apply": "Apply",
+    "showing": "Showing",
+    "storedLocally": "stored locally",
+    "source": "Source",
+    "lastMonth": "Last Month",
+    "thisMonth": "This Month",
+    "growth": "Growth",
+    "used": "used",
+    "remaining": "remaining",
+    "overBy": "Over by",
+    "from": "From",
+    "to": "To",
+    "noTransactionsYet": "No transactions yet.",
+    "addFirstTransaction": "Add your first income or expense above.",
+    "showingOf": "Showing {{shown}} of {{total}} transactions"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -119,7 +135,13 @@
     "deleteReceipt": "Delete Receipt",
     "transactionAdded": "added",
     "transactionDeleted": "Transaction deleted",
-    "transactionUpdated": "Transaction updated"
+    "transactionUpdated": "Transaction updated",
+    "activityType": "Activity Type",
+    "selectCategory": "Select category",
+    "whatWasThisFor": "What was this for?",
+    "operatingDaily": "Operating (daily activities)",
+    "investingInvestments": "Investing (investments)",
+    "financingLoans": "Financing (loans/debt)"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -141,7 +163,35 @@
     "incomeSources": "Income Sources",
     "noExpenses": "No expenses recorded",
     "noIncome": "No income recorded",
-    "footerNote": "Data stored locally. Export to CSV and save to iCloud Drive for backup."
+    "footerNote": "Data stored locally. Export to CSV and save to iCloud Drive for backup.",
+    "monthlyCashFlow": "Monthly Cash Flow",
+    "incomeGrowth": "Income Growth",
+    "noIncomeYet": "No income recorded yet.",
+    "addIncomeToTrack": "Add income transactions to track growth.",
+    "budgetProgress": "Budget Progress",
+    "budgetGoals": "Budget Goals",
+    "addBudget": "Add Budget",
+    "setMonthlyBudget": "Set Monthly Budget",
+    "monthlyLimit": "Monthly Limit",
+    "budgetFor": "Budget for",
+    "noBudgetsSet": "No budgets set for this month. Add spending limits to track your goals.",
+    "dateRange": "Date Range",
+    "selectCustomRange": "Select custom range",
+    "applyRange": "Apply Range",
+    "csvStorage": "CSV Storage",
+    "csvDescription": "Export your transactions to CSV and save to iCloud Drive. Import to restore.",
+    "imported": "Imported",
+    "csvDownloaded": "CSV file downloaded",
+    "noTransactionsToExport": "No transactions to export",
+    "failedToImport": "Failed to import CSV file"
+  },
+  "dateRanges": {
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "last3Months": "Last 3 Months",
+    "thisYear": "This Year",
+    "allTime": "All Time",
+    "custom": "Custom"
   },
   "goals": {
     "title": "Financial Goals",
@@ -271,5 +321,9 @@
     "netFlow": "Net Flow",
     "upcomingThisMonth": "Upcoming This Month",
     "noPaymentsThisMonth": "No payments this month"
+  },
+  "charts": {
+    "income": "Income",
+    "expenses": "Expenses"
   }
 }
