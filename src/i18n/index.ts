@@ -40,4 +40,24 @@ i18n
     },
   });
 
+// Apply initial language settings (font and RTL)
+const applyLanguageSettings = (lang: string) => {
+  const selectedLang = languages.find(l => l.code === lang);
+  document.documentElement.dir = selectedLang?.rtl ? 'rtl' : 'ltr';
+  document.documentElement.classList.remove('font-ar', 'font-zh', 'font-default');
+  if (lang === 'ar') {
+    document.documentElement.classList.add('font-ar');
+  } else if (lang === 'zh') {
+    document.documentElement.classList.add('font-zh');
+  } else {
+    document.documentElement.classList.add('font-default');
+  }
+};
+
+// Apply on init
+applyLanguageSettings(i18n.language);
+
+// Apply on language change
+i18n.on('languageChanged', applyLanguageSettings);
+
 export default i18n;
