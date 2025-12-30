@@ -2,14 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Papa from 'papaparse';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { PortfolioHolding, PriceData, Transaction, AssetCategory } from '@/types/finance';
+import { PortfolioHolding, PriceData, AssetCategory } from '@/types/finance';
 import { format } from 'date-fns';
 
 const PRICES_CACHE_KEY = 'cashflow_prices_cache';
-
-interface UsePortfolioOptions {
-  onTransactionCreate?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
-}
 
 // CoinGecko ID mapping for common cryptos
 const CRYPTO_ID_MAP: Record<string, string> = {
@@ -18,7 +14,7 @@ const CRYPTO_ID_MAP: Record<string, string> = {
   LINK: 'chainlink', UNI: 'uniswap', ATOM: 'cosmos', LTC: 'litecoin',
 };
 
-export function usePortfolio(options?: UsePortfolioOptions) {
+export function usePortfolio() {
   const { user } = useAuth();
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
@@ -148,7 +144,7 @@ export function usePortfolio(options?: UsePortfolioOptions) {
     }
   }, [isLoading, holdings, prices, refreshPrices]);
 
-  const addHolding = useCallback(async (holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>, createTransaction: boolean = false) => {
+  const addHolding = useCallback(async (holding: Omit<PortfolioHolding, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!user) return null;
 
     const { data, error } = await supabase
@@ -183,19 +179,8 @@ export function usePortfolio(options?: UsePortfolioOptions) {
 
     setHoldings(prev => [newHolding, ...prev]);
 
-    if (createTransaction && options?.onTransactionCreate) {
-      options.onTransactionCreate({
-        date: holding.purchaseDate,
-        type: 'expense',
-        category: 'investments',
-        description: `Investment: ${holding.ticker} (${holding.quantity} shares)`,
-        amount: holding.quantity * holding.purchasePrice,
-        activityType: 'investing',
-      });
-    }
-
     return newHolding;
-  }, [user, options]);
+  }, [user]);
 
   const updateHolding = useCallback(async (id: string, updates: Partial<PortfolioHolding>) => {
     const dbUpdates: any = {};
