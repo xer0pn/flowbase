@@ -16,7 +16,23 @@
     "search": "بحث",
     "filter": "تصفية",
     "export": "تصدير",
-    "import": "استيراد"
+    "import": "استيراد",
+    "exportCSV": "تصدير CSV",
+    "transactions": "معاملات",
+    "assets": "أصول",
+    "positive": "إيجابي",
+    "negative": "سلبي",
+    "updated": "تم التحديث",
+    "refreshPrices": "تحديث الأسعار",
+    "holdingAdded": "تمت إضافة الحيازة إلى المحفظة",
+    "holdingRemoved": "تمت إزالة الحيازة",
+    "pricesUpdated": "تم تحديث الأسعار",
+    "goalCreated": "تم إنشاء الهدف",
+    "goalDeleted": "تم حذف الهدف",
+    "fundsAdded": "تمت إضافة الأموال",
+    "hasBeenAdded": "تمت إضافته",
+    "hasBeenRemoved": "تمت إزالته",
+    "addedToGoal": "تمت إضافته للهدف"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -52,7 +68,8 @@
     "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة. يرجى المحاولة مرة أخرى.",
     "emailRequired": "يرجى إدخال عنوان بريد إلكتروني صحيح",
     "passwordMinLength": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
-    "passwordsNoMatch": "كلمات المرور غير متطابقة"
+    "passwordsNoMatch": "كلمات المرور غير متطابقة",
+    "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة"
   },
   "settings": {
     "title": "الإعدادات",
@@ -65,7 +82,11 @@
     "theme": "المظهر",
     "darkMode": "الوضع الداكن",
     "lightMode": "الوضع الفاتح",
-    "system": "النظام"
+    "system": "النظام",
+    "accountPreferences": "إدارة تفضيلات حسابك",
+    "accountInfo": "معلومات حسابك",
+    "customizeExperience": "تخصيص تجربتك",
+    "currentPasswordRequired": "كلمة المرور الحالية مطلوبة"
   },
   "transactions": {
     "title": "المعاملات",
@@ -81,25 +102,50 @@
     "receipt": "إيصال",
     "uploadReceipt": "رفع إيصال",
     "viewReceipt": "عرض الإيصال",
-    "deleteReceipt": "حذف الإيصال"
+    "deleteReceipt": "حذف الإيصال",
+    "transactionAdded": "تمت الإضافة",
+    "transactionDeleted": "تم حذف المعاملة",
+    "transactionUpdated": "تم تحديث المعاملة"
   },
   "dashboard": {
     "title": "لوحة التحكم",
+    "subtitle": "تتبع دخلك ومصروفاتك",
     "totalIncome": "إجمالي الدخل",
     "totalExpenses": "إجمالي المصروفات",
     "netSavings": "صافي المدخرات",
     "thisMonth": "هذا الشهر",
-    "recentTransactions": "المعاملات الأخيرة"
+    "recentTransactions": "المعاملات الأخيرة",
+    "filteredIncome": "الدخل المصفى",
+    "filteredExpenses": "المصروفات المصفاة",
+    "allTimeIncome": "إجمالي الدخل",
+    "allTimeExpenses": "إجمالي المصروفات",
+    "cashFlow": "التدفق النقدي",
+    "allTimeNet": "صافي الكل",
+    "filteredTransactions": "المعاملات المصفاة",
+    "allTransactions": "جميع المعاملات",
+    "expenseBreakdown": "تفصيل المصروفات",
+    "incomeSources": "مصادر الدخل",
+    "noExpenses": "لا توجد مصروفات مسجلة",
+    "noIncome": "لا يوجد دخل مسجل",
+    "footerNote": "البيانات مخزنة محلياً. صدّر إلى CSV واحفظ في iCloud Drive للنسخ الاحتياطي."
   },
   "goals": {
     "title": "الأهداف المالية",
+    "subtitle": "حدد أهداف الادخار وتتبع تقدمك",
     "addGoal": "إضافة هدف",
     "targetAmount": "المبلغ المستهدف",
     "currentAmount": "المبلغ الحالي",
     "deadline": "الموعد النهائي",
     "progress": "التقدم",
     "completed": "مكتمل",
-    "inProgress": "قيد التنفيذ"
+    "inProgress": "قيد التنفيذ",
+    "activeGoals": "الأهداف النشطة",
+    "active": "نشط",
+    "overallProgress": "التقدم العام",
+    "monthlySavings": "المدخرات الشهرية",
+    "threeMonthAverage": "متوسط 3 أشهر",
+    "noActiveGoals": "لا توجد أهداف نشطة بعد. أنشئ أول هدف مالي لك!",
+    "noCompletedGoals": "لا توجد أهداف مكتملة بعد. استمر في العمل نحو أهدافك!"
   },
   "recurring": {
     "title": "متكرر",
@@ -111,5 +157,15 @@
     "active": "نشط",
     "inactive": "غير نشط",
     "generateTransactions": "إنشاء المعاملات"
+  },
+  "portfolio": {
+    "title": "المحفظة",
+    "subtitle": "تتبع استثماراتك في الأسهم والعملات الرقمية",
+    "yourHoldings": "حيازاتك",
+    "addHolding": "إضافة حيازة",
+    "totalValue": "القيمة الإجمالية",
+    "totalGain": "إجمالي الربح",
+    "bestPerformer": "الأفضل أداءً",
+    "worstPerformer": "الأسوأ أداءً"
   }
 }

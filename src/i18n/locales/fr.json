@@ -16,7 +16,23 @@
     "search": "Rechercher",
     "filter": "Filtrer",
     "export": "Exporter",
-    "import": "Importer"
+    "import": "Importer",
+    "exportCSV": "Exporter CSV",
+    "transactions": "transactions",
+    "assets": "actifs",
+    "positive": "Positif",
+    "negative": "Négatif",
+    "updated": "Mis à jour",
+    "refreshPrices": "Actualiser les Prix",
+    "holdingAdded": "Actif ajouté au portefeuille",
+    "holdingRemoved": "Actif supprimé",
+    "pricesUpdated": "Prix mis à jour",
+    "goalCreated": "Objectif créé",
+    "goalDeleted": "Objectif supprimé",
+    "fundsAdded": "Fonds ajoutés",
+    "hasBeenAdded": "a été ajouté",
+    "hasBeenRemoved": "a été supprimé",
+    "addedToGoal": "ajouté à l'objectif"
   },
   "nav": {
     "dashboard": "Tableau de Bord",
@@ -52,7 +68,8 @@
     "invalidCredentials": "E-mail ou mot de passe invalide. Veuillez réessayer.",
     "emailRequired": "Veuillez entrer une adresse e-mail valide",
     "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
-    "passwordsNoMatch": "Les mots de passe ne correspondent pas"
+    "passwordsNoMatch": "Les mots de passe ne correspondent pas",
+    "currentPasswordIncorrect": "Le mot de passe actuel est incorrect"
   },
   "settings": {
     "title": "Paramètres",
@@ -65,7 +82,11 @@
     "theme": "Thème",
     "darkMode": "Mode Sombre",
     "lightMode": "Mode Clair",
-    "system": "Système"
+    "system": "Système",
+    "accountPreferences": "Gérez les préférences de votre compte",
+    "accountInfo": "Informations de votre compte",
+    "customizeExperience": "Personnalisez votre expérience",
+    "currentPasswordRequired": "Le mot de passe actuel est requis"
   },
   "transactions": {
     "title": "Transactions",
@@ -81,25 +102,50 @@
     "receipt": "Reçu",
     "uploadReceipt": "Télécharger le Reçu",
     "viewReceipt": "Voir le Reçu",
-    "deleteReceipt": "Supprimer le Reçu"
+    "deleteReceipt": "Supprimer le Reçu",
+    "transactionAdded": "ajouté",
+    "transactionDeleted": "Transaction supprimée",
+    "transactionUpdated": "Transaction mise à jour"
   },
   "dashboard": {
     "title": "Tableau de Bord",
+    "subtitle": "Suivez vos revenus et dépenses",
     "totalIncome": "Revenus Totaux",
     "totalExpenses": "Dépenses Totales",
     "netSavings": "Épargne Nette",
     "thisMonth": "Ce Mois",
-    "recentTransactions": "Transactions Récentes"
+    "recentTransactions": "Transactions Récentes",
+    "filteredIncome": "Revenus Filtrés",
+    "filteredExpenses": "Dépenses Filtrées",
+    "allTimeIncome": "Revenus Totaux",
+    "allTimeExpenses": "Dépenses Totales",
+    "cashFlow": "Flux de Trésorerie",
+    "allTimeNet": "Net Total",
+    "filteredTransactions": "Transactions Filtrées",
+    "allTransactions": "Toutes les Transactions",
+    "expenseBreakdown": "Répartition des Dépenses",
+    "incomeSources": "Sources de Revenus",
+    "noExpenses": "Aucune dépense enregistrée",
+    "noIncome": "Aucun revenu enregistré",
+    "footerNote": "Données stockées localement. Exportez en CSV et sauvegardez sur iCloud Drive."
   },
   "goals": {
     "title": "Objectifs Financiers",
+    "subtitle": "Définissez des objectifs d'épargne et suivez votre progression",
     "addGoal": "Ajouter un Objectif",
     "targetAmount": "Montant Cible",
     "currentAmount": "Montant Actuel",
     "deadline": "Date Limite",
     "progress": "Progression",
     "completed": "Terminé",
-    "inProgress": "En Cours"
+    "inProgress": "En Cours",
+    "activeGoals": "Objectifs Actifs",
+    "active": "Actif",
+    "overallProgress": "Progression Globale",
+    "monthlySavings": "Épargne Mensuelle",
+    "threeMonthAverage": "Moyenne sur 3 mois",
+    "noActiveGoals": "Aucun objectif actif. Créez votre premier objectif financier !",
+    "noCompletedGoals": "Aucun objectif terminé. Continuez à travailler vers vos cibles !"
   },
   "recurring": {
     "title": "Récurrent",
@@ -111,5 +157,15 @@
     "active": "Actif",
     "inactive": "Inactif",
     "generateTransactions": "Générer des Transactions"
+  },
+  "portfolio": {
+    "title": "Portefeuille",
+    "subtitle": "Suivez vos investissements en actions et cryptomonnaies",
+    "yourHoldings": "Vos Actifs",
+    "addHolding": "Ajouter un Actif",
+    "totalValue": "Valeur Totale",
+    "totalGain": "Gain Total",
+    "bestPerformer": "Meilleure Performance",
+    "worstPerformer": "Pire Performance"
   }
 }

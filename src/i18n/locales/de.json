@@ -16,7 +16,23 @@
     "search": "Suchen",
     "filter": "Filtern",
     "export": "Exportieren",
-    "import": "Importieren"
+    "import": "Importieren",
+    "exportCSV": "CSV Exportieren",
+    "transactions": "Transaktionen",
+    "assets": "Vermögenswerte",
+    "positive": "Positiv",
+    "negative": "Negativ",
+    "updated": "Aktualisiert",
+    "refreshPrices": "Preise Aktualisieren",
+    "holdingAdded": "Position zum Portfolio hinzugefügt",
+    "holdingRemoved": "Position entfernt",
+    "pricesUpdated": "Preise aktualisiert",
+    "goalCreated": "Ziel erstellt",
+    "goalDeleted": "Ziel gelöscht",
+    "fundsAdded": "Mittel hinzugefügt",
+    "hasBeenAdded": "wurde hinzugefügt",
+    "hasBeenRemoved": "wurde entfernt",
+    "addedToGoal": "zum Ziel hinzugefügt"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -52,7 +68,8 @@
     "invalidCredentials": "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.",
     "emailRequired": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen haben",
-    "passwordsNoMatch": "Die Passwörter stimmen nicht überein"
+    "passwordsNoMatch": "Die Passwörter stimmen nicht überein",
+    "currentPasswordIncorrect": "Das aktuelle Passwort ist falsch"
   },
   "settings": {
     "title": "Einstellungen",
@@ -65,7 +82,11 @@
     "theme": "Thema",
     "darkMode": "Dunkelmodus",
     "lightMode": "Hellmodus",
-    "system": "System"
+    "system": "System",
+    "accountPreferences": "Verwalten Sie Ihre Kontoeinstellungen",
+    "accountInfo": "Ihre Kontoinformationen",
+    "customizeExperience": "Passen Sie Ihre Erfahrung an",
+    "currentPasswordRequired": "Aktuelles Passwort erforderlich"
   },
   "transactions": {
     "title": "Transaktionen",
@@ -81,25 +102,50 @@
     "receipt": "Beleg",
     "uploadReceipt": "Beleg Hochladen",
     "viewReceipt": "Beleg Ansehen",
-    "deleteReceipt": "Beleg Löschen"
+    "deleteReceipt": "Beleg Löschen",
+    "transactionAdded": "hinzugefügt",
+    "transactionDeleted": "Transaktion gelöscht",
+    "transactionUpdated": "Transaktion aktualisiert"
   },
   "dashboard": {
     "title": "Dashboard",
+    "subtitle": "Verfolgen Sie Ihre Einnahmen und Ausgaben",
     "totalIncome": "Gesamteinkommen",
     "totalExpenses": "Gesamtausgaben",
     "netSavings": "Nettoersparnisse",
     "thisMonth": "Diesen Monat",
-    "recentTransactions": "Letzte Transaktionen"
+    "recentTransactions": "Letzte Transaktionen",
+    "filteredIncome": "Gefiltertes Einkommen",
+    "filteredExpenses": "Gefilterte Ausgaben",
+    "allTimeIncome": "Gesamteinkommen",
+    "allTimeExpenses": "Gesamtausgaben",
+    "cashFlow": "Cashflow",
+    "allTimeNet": "Gesamtnetto",
+    "filteredTransactions": "Gefilterte Transaktionen",
+    "allTransactions": "Alle Transaktionen",
+    "expenseBreakdown": "Ausgabenaufschlüsselung",
+    "incomeSources": "Einkommensquellen",
+    "noExpenses": "Keine Ausgaben erfasst",
+    "noIncome": "Kein Einkommen erfasst",
+    "footerNote": "Daten lokal gespeichert. Exportieren Sie als CSV und speichern Sie in iCloud Drive."
   },
   "goals": {
     "title": "Finanzielle Ziele",
+    "subtitle": "Setzen Sie Sparziele und verfolgen Sie Ihren Fortschritt",
     "addGoal": "Ziel Hinzufügen",
     "targetAmount": "Zielbetrag",
     "currentAmount": "Aktueller Betrag",
     "deadline": "Frist",
     "progress": "Fortschritt",
     "completed": "Abgeschlossen",
-    "inProgress": "In Bearbeitung"
+    "inProgress": "In Bearbeitung",
+    "activeGoals": "Aktive Ziele",
+    "active": "Aktiv",
+    "overallProgress": "Gesamtfortschritt",
+    "monthlySavings": "Monatliche Ersparnisse",
+    "threeMonthAverage": "3-Monats-Durchschnitt",
+    "noActiveGoals": "Noch keine aktiven Ziele. Erstellen Sie Ihr erstes finanzielles Ziel!",
+    "noCompletedGoals": "Noch keine abgeschlossenen Ziele. Arbeiten Sie weiter an Ihren Zielen!"
   },
   "recurring": {
     "title": "Wiederkehrend",
@@ -111,5 +157,15 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "generateTransactions": "Transaktionen Generieren"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "subtitle": "Verfolgen Sie Ihre Aktien- und Krypto-Investitionen",
+    "yourHoldings": "Ihre Positionen",
+    "addHolding": "Position Hinzufügen",
+    "totalValue": "Gesamtwert",
+    "totalGain": "Gesamtgewinn",
+    "bestPerformer": "Beste Performance",
+    "worstPerformer": "Schlechteste Performance"
   }
 }
