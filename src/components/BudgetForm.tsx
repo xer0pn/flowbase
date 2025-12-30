@@ -19,6 +19,7 @@ import {
 import { Category, Budget } from '@/types/finance';
 import { Plus, Target } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 interface BudgetFormProps {
   categories: Category[];
@@ -28,6 +29,7 @@ interface BudgetFormProps {
 }
 
 export function BudgetForm({ categories, budgets, onAddBudget, onDeleteBudget }: BudgetFormProps) {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
@@ -65,27 +67,27 @@ export function BudgetForm({ categories, budgets, onAddBudget, onDeleteBudget }:
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Target className="h-5 w-5" />
-          <h3 className="text-lg font-bold uppercase tracking-wide">Budget Goals</h3>
+          <h3 className="text-lg font-bold uppercase tracking-wide">{t('dashboard.budgetGoals')}</h3>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="border-2">
               <Plus className="h-4 w-4 mr-1" />
-              Add
+              {t('common.add')}
             </Button>
           </DialogTrigger>
           <DialogContent className="border-2 border-border shadow-md">
             <DialogHeader>
               <DialogTitle className="text-lg font-bold uppercase tracking-wide">
-                Set Monthly Budget
+                {t('dashboard.setMonthlyBudget')}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label className="uppercase text-xs tracking-wide">Category</Label>
+                <Label className="uppercase text-xs tracking-wide">{t('transactions.category')}</Label>
                 <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={t('transactions.selectCategory')} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableCategories.map((cat) => (
@@ -97,7 +99,7 @@ export function BudgetForm({ categories, budgets, onAddBudget, onDeleteBudget }:
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="uppercase text-xs tracking-wide">Monthly Limit</Label>
+                <Label className="uppercase text-xs tracking-wide">{t('dashboard.monthlyLimit')}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">$</span>
                   <Input
@@ -112,11 +114,11 @@ export function BudgetForm({ categories, budgets, onAddBudget, onDeleteBudget }:
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Budget for {format(new Date(), 'MMMM yyyy')}
+                {t('dashboard.budgetFor')} {format(new Date(), 'MMMM yyyy')}
               </p>
               <Button type="submit" className="w-full font-bold uppercase tracking-wide">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Budget
+                {t('dashboard.addBudget')}
               </Button>
             </form>
           </DialogContent>
@@ -125,7 +127,7 @@ export function BudgetForm({ categories, budgets, onAddBudget, onDeleteBudget }:
 
       {currentMonthBudgets.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          No budgets set for this month. Add spending limits to track your goals.
+          {t('dashboard.noBudgetsSet')}
         </p>
       ) : (
         <div className="space-y-2">

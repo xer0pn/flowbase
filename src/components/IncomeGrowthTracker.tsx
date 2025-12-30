@@ -2,6 +2,7 @@ import { Transaction, Category } from '@/types/finance';
 import { parseISO, startOfMonth, endOfMonth, subMonths, isWithinInterval, format } from 'date-fns';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface IncomeGrowthTrackerProps {
   transactions: Transaction[];
@@ -18,6 +19,7 @@ interface IncomeSourceData {
 }
 
 export function IncomeGrowthTracker({ transactions, categories }: IncomeGrowthTrackerProps) {
+  const { t } = useTranslation();
   const now = new Date();
   const thisMonthStart = startOfMonth(now);
   const thisMonthEnd = endOfMonth(now);
@@ -50,10 +52,10 @@ export function IncomeGrowthTracker({ transactions, categories }: IncomeGrowthTr
   if (activeCategories.length === 0) {
     return (
       <div className="border-2 border-border p-6 shadow-sm">
-        <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">Income Growth</h3>
+        <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">{t('dashboard.incomeGrowth')}</h3>
         <div className="text-center py-8 text-muted-foreground">
-          <p>No income recorded yet.</p>
-          <p className="text-sm mt-1">Add income transactions to track growth.</p>
+          <p>{t('dashboard.noIncomeYet')}</p>
+          <p className="text-sm mt-1">{t('dashboard.addIncomeToTrack')}</p>
         </div>
       </div>
     );
@@ -98,7 +100,7 @@ export function IncomeGrowthTracker({ transactions, categories }: IncomeGrowthTr
   return (
     <div className="border-2 border-border p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold uppercase tracking-wide">Income Growth</h3>
+        <h3 className="text-lg font-bold uppercase tracking-wide">{t('dashboard.incomeGrowth')}</h3>
         <span className="text-xs text-muted-foreground font-mono">
           {format(lastMonthStart, 'MMM')} → {format(thisMonthStart, 'MMM yyyy')}
         </span>
@@ -106,10 +108,10 @@ export function IncomeGrowthTracker({ transactions, categories }: IncomeGrowthTr
 
       {/* Header Row */}
       <div className="grid grid-cols-4 gap-4 text-xs font-bold uppercase tracking-wide text-muted-foreground border-b-2 border-border pb-2 mb-2">
-        <div>Source</div>
-        <div className="text-right">Last Month</div>
-        <div className="text-right">This Month</div>
-        <div className="text-right">Growth</div>
+        <div>{t('common.source')}</div>
+        <div className="text-right">{t('common.lastMonth')}</div>
+        <div className="text-right">{t('common.thisMonth')}</div>
+        <div className="text-right">{t('common.growth')}</div>
       </div>
 
       {/* Income Sources */}
@@ -154,7 +156,7 @@ export function IncomeGrowthTracker({ transactions, categories }: IncomeGrowthTr
 
       {/* Total Row */}
       <div className="grid grid-cols-4 gap-4 items-center pt-3 mt-3 border-t-2 border-border">
-        <div className="font-bold uppercase">Total</div>
+        <div className="font-bold uppercase">{t('common.total')}</div>
         <div className="text-right font-mono text-muted-foreground">
           {formatCurrency(totalLastMonth)}
         </div>

@@ -12,6 +12,7 @@ import {
 import { Category, TransactionType, ActivityType } from '@/types/finance';
 import { Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 interface TransactionFormProps {
   categories: Category[];
@@ -26,6 +27,7 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ categories, onSubmit }: TransactionFormProps) {
+  const { t } = useTranslation();
   const [type, setType] = useState<TransactionType>('expense');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [category, setCategory] = useState('');
@@ -57,7 +59,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
   return (
     <form onSubmit={handleSubmit} className="border-2 border-border p-6 shadow-sm">
-      <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">Add Transaction</h3>
+      <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">{t('transactions.addTransaction')}</h3>
       
       <div className="grid gap-4">
         {/* Type Toggle */}
@@ -71,7 +73,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
                 : 'bg-background text-foreground border-border hover:bg-muted'
               }`}
           >
-            Income
+            {t('transactions.income')}
           </button>
           <button
             type="button"
@@ -82,28 +84,28 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
                 : 'bg-background text-foreground border-border hover:bg-muted'
               }`}
           >
-            Expense
+            {t('transactions.expense')}
           </button>
         </div>
 
         {/* Activity Type */}
         <div className="space-y-2">
-          <Label className="uppercase text-xs tracking-wide">Activity Type</Label>
+          <Label className="uppercase text-xs tracking-wide">{t('transactions.activityType')}</Label>
           <Select value={activityType} onValueChange={(v) => setActivityType(v as ActivityType)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="operating">Operating (daily activities)</SelectItem>
-              <SelectItem value="investing">Investing (investments)</SelectItem>
-              <SelectItem value="financing">Financing (loans/debt)</SelectItem>
+              <SelectItem value="operating">{t('transactions.operatingDaily')}</SelectItem>
+              <SelectItem value="investing">{t('transactions.investingInvestments')}</SelectItem>
+              <SelectItem value="financing">{t('transactions.financingLoans')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Date */}
         <div className="space-y-2">
-          <Label htmlFor="date" className="uppercase text-xs tracking-wide">Date</Label>
+          <Label htmlFor="date" className="uppercase text-xs tracking-wide">{t('transactions.date')}</Label>
           <Input
             id="date"
             type="date"
@@ -115,10 +117,10 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
         {/* Category */}
         <div className="space-y-2">
-          <Label htmlFor="category" className="uppercase text-xs tracking-wide">Category</Label>
+          <Label htmlFor="category" className="uppercase text-xs tracking-wide">{t('transactions.category')}</Label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger>
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder={t('transactions.selectCategory')} />
             </SelectTrigger>
             <SelectContent>
               {filteredCategories.map((cat) => (
@@ -132,10 +134,10 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
         {/* Description */}
         <div className="space-y-2">
-          <Label htmlFor="description" className="uppercase text-xs tracking-wide">Description</Label>
+          <Label htmlFor="description" className="uppercase text-xs tracking-wide">{t('transactions.description')}</Label>
           <Input
             id="description"
-            placeholder="What was this for?"
+            placeholder={t('transactions.whatWasThisFor')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -143,7 +145,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
         {/* Amount */}
         <div className="space-y-2">
-          <Label htmlFor="amount" className="uppercase text-xs tracking-wide">Amount</Label>
+          <Label htmlFor="amount" className="uppercase text-xs tracking-wide">{t('transactions.amount')}</Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">$</span>
             <Input
@@ -161,7 +163,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
         <Button type="submit" className="w-full font-bold uppercase tracking-wide">
           <Plus className="mr-2 h-4 w-4" />
-          Add {type}
+          {t('common.add')} {type === 'income' ? t('transactions.income') : t('transactions.expense')}
         </Button>
       </div>
     </form>

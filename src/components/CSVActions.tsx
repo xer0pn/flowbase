@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Upload, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface CSVActionsProps {
   onExport: () => void;
@@ -10,6 +11,7 @@ interface CSVActionsProps {
 }
 
 export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImportClick = () => {
@@ -22,9 +24,9 @@ export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsP
 
     try {
       const count = await onImport(file);
-      toast.success(`Imported ${count} transactions`);
+      toast.success(`${t('dashboard.imported')} ${count} ${t('common.transactions')}`);
     } catch (error) {
-      toast.error('Failed to import CSV file');
+      toast.error(t('dashboard.failedToImport'));
     }
 
     // Reset file input
@@ -35,21 +37,21 @@ export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsP
 
   const handleExport = () => {
     if (transactionCount === 0) {
-      toast.error('No transactions to export');
+      toast.error(t('dashboard.noTransactionsToExport'));
       return;
     }
     onExport();
-    toast.success('CSV file downloaded');
+    toast.success(t('dashboard.csvDownloaded'));
   };
 
   return (
     <div className="border-2 border-border p-6 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
         <FileText className="h-5 w-5" />
-        <h3 className="text-lg font-bold uppercase tracking-wide">CSV Storage</h3>
+        <h3 className="text-lg font-bold uppercase tracking-wide">{t('dashboard.csvStorage')}</h3>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Export your transactions to CSV and save to iCloud Drive. Import to restore.
+        {t('dashboard.csvDescription')}
       </p>
       <div className="flex gap-2">
         <Button
@@ -58,7 +60,7 @@ export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsP
           className="flex-1 font-bold uppercase tracking-wide"
         >
           <Download className="mr-2 h-4 w-4" />
-          Export
+          {t('common.export')}
         </Button>
         <Button
           variant="outline"
@@ -66,7 +68,7 @@ export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsP
           className="flex-1 font-bold uppercase tracking-wide"
         >
           <Upload className="mr-2 h-4 w-4" />
-          Import
+          {t('common.import')}
         </Button>
         <input
           ref={fileInputRef}
@@ -77,7 +79,7 @@ export function CSVActions({ onExport, onImport, transactionCount }: CSVActionsP
         />
       </div>
       <p className="text-xs text-muted-foreground mt-3">
-        {transactionCount} transactions stored locally
+        {transactionCount} {t('common.transactions')} {t('common.storedLocally')}
       </p>
     </div>
   );

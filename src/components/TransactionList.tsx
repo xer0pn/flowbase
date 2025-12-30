@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { ReceiptUpload } from './ReceiptUpload';
+import { useTranslation } from 'react-i18next';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -16,6 +17,7 @@ interface TransactionListProps {
 }
 
 export function TransactionList({ transactions, categories, onDelete, onUpdate, onReceiptUpdate }: TransactionListProps) {
+  const { t } = useTranslation();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -36,8 +38,8 @@ export function TransactionList({ transactions, categories, onDelete, onUpdate, 
   if (transactions.length === 0) {
     return (
       <div className="border-2 border-dashed border-border p-12 text-center">
-        <p className="text-muted-foreground">No transactions yet.</p>
-        <p className="text-sm text-muted-foreground mt-1">Add your first income or expense above.</p>
+        <p className="text-muted-foreground">{t('common.noTransactionsYet')}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t('common.addFirstTransaction')}</p>
       </div>
     );
   }
@@ -116,7 +118,7 @@ export function TransactionList({ transactions, categories, onDelete, onUpdate, 
         ))}
         {transactions.length > 20 && (
           <div className="p-4 text-center text-muted-foreground text-sm">
-            Showing 20 of {transactions.length} transactions
+            {t('common.showing')} 20 / {transactions.length} {t('common.transactions')}
           </div>
         )}
       </div>
