@@ -16,7 +16,23 @@
     "search": "搜索",
     "filter": "筛选",
     "export": "导出",
-    "import": "导入"
+    "import": "导入",
+    "exportCSV": "导出CSV",
+    "transactions": "笔交易",
+    "assets": "项资产",
+    "positive": "正数",
+    "negative": "负数",
+    "updated": "已更新",
+    "refreshPrices": "刷新价格",
+    "holdingAdded": "持仓已添加到投资组合",
+    "holdingRemoved": "持仓已移除",
+    "pricesUpdated": "价格已更新",
+    "goalCreated": "目标已创建",
+    "goalDeleted": "目标已删除",
+    "fundsAdded": "资金已添加",
+    "hasBeenAdded": "已添加",
+    "hasBeenRemoved": "已移除",
+    "addedToGoal": "已添加到目标"
   },
   "nav": {
     "dashboard": "仪表板",
@@ -52,7 +68,8 @@
     "invalidCredentials": "邮箱或密码无效。请重试。",
     "emailRequired": "请输入有效的电子邮件地址",
     "passwordMinLength": "密码必须至少6个字符",
-    "passwordsNoMatch": "密码不匹配"
+    "passwordsNoMatch": "密码不匹配",
+    "currentPasswordIncorrect": "当前密码不正确"
   },
   "settings": {
     "title": "设置",
@@ -65,7 +82,11 @@
     "theme": "主题",
     "darkMode": "深色模式",
     "lightMode": "浅色模式",
-    "system": "跟随系统"
+    "system": "跟随系统",
+    "accountPreferences": "管理您的账户偏好设置",
+    "accountInfo": "您的账户信息",
+    "customizeExperience": "自定义您的体验",
+    "currentPasswordRequired": "需要当前密码"
   },
   "transactions": {
     "title": "交易",
@@ -81,25 +102,50 @@
     "receipt": "收据",
     "uploadReceipt": "上传收据",
     "viewReceipt": "查看收据",
-    "deleteReceipt": "删除收据"
+    "deleteReceipt": "删除收据",
+    "transactionAdded": "已添加",
+    "transactionDeleted": "交易已删除",
+    "transactionUpdated": "交易已更新"
   },
   "dashboard": {
     "title": "仪表板",
+    "subtitle": "跟踪您的收入和支出",
     "totalIncome": "总收入",
     "totalExpenses": "总支出",
     "netSavings": "净储蓄",
     "thisMonth": "本月",
-    "recentTransactions": "最近交易"
+    "recentTransactions": "最近交易",
+    "filteredIncome": "筛选后收入",
+    "filteredExpenses": "筛选后支出",
+    "allTimeIncome": "总收入",
+    "allTimeExpenses": "总支出",
+    "cashFlow": "现金流",
+    "allTimeNet": "累计净额",
+    "filteredTransactions": "筛选后的交易",
+    "allTransactions": "所有交易",
+    "expenseBreakdown": "支出明细",
+    "incomeSources": "收入来源",
+    "noExpenses": "暂无支出记录",
+    "noIncome": "暂无收入记录",
+    "footerNote": "数据本地存储。导出CSV并保存到iCloud Drive进行备份。"
   },
   "goals": {
     "title": "财务目标",
+    "subtitle": "设定储蓄目标并跟踪进度",
     "addGoal": "添加目标",
     "targetAmount": "目标金额",
     "currentAmount": "当前金额",
     "deadline": "截止日期",
     "progress": "进度",
     "completed": "已完成",
-    "inProgress": "进行中"
+    "inProgress": "进行中",
+    "activeGoals": "进行中的目标",
+    "active": "进行中",
+    "overallProgress": "总体进度",
+    "monthlySavings": "月储蓄",
+    "threeMonthAverage": "3个月平均",
+    "noActiveGoals": "暂无进行中的目标。创建您的第一个财务目标！",
+    "noCompletedGoals": "暂无已完成的目标。继续努力实现您的目标！"
   },
   "recurring": {
     "title": "定期",
@@ -111,5 +157,15 @@
     "active": "启用",
     "inactive": "禁用",
     "generateTransactions": "生成交易"
+  },
+  "portfolio": {
+    "title": "投资组合",
+    "subtitle": "跟踪您的股票和加密货币投资",
+    "yourHoldings": "您的持仓",
+    "addHolding": "添加持仓",
+    "totalValue": "总价值",
+    "totalGain": "总收益",
+    "bestPerformer": "表现最佳",
+    "worstPerformer": "表现最差"
   }
 }

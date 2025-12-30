@@ -16,7 +16,23 @@
     "search": "Search",
     "filter": "Filter",
     "export": "Export",
-    "import": "Import"
+    "import": "Import",
+    "exportCSV": "Export CSV",
+    "transactions": "transactions",
+    "assets": "assets",
+    "positive": "Positive",
+    "negative": "Negative",
+    "updated": "Updated",
+    "refreshPrices": "Refresh Prices",
+    "holdingAdded": "Holding added to portfolio",
+    "holdingRemoved": "Holding removed",
+    "pricesUpdated": "Prices updated",
+    "goalCreated": "Goal created",
+    "goalDeleted": "Goal deleted",
+    "fundsAdded": "Funds added",
+    "hasBeenAdded": "has been added",
+    "hasBeenRemoved": "has been removed",
+    "addedToGoal": "added to goal"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -52,7 +68,8 @@
     "invalidCredentials": "Invalid email or password. Please try again.",
     "emailRequired": "Please enter a valid email address",
     "passwordMinLength": "Password must be at least 6 characters",
-    "passwordsNoMatch": "Passwords do not match"
+    "passwordsNoMatch": "Passwords do not match",
+    "currentPasswordIncorrect": "Current password is incorrect"
   },
   "settings": {
     "title": "Settings",
@@ -65,7 +82,11 @@
     "theme": "Theme",
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
-    "system": "System"
+    "system": "System",
+    "accountPreferences": "Manage your account preferences",
+    "accountInfo": "Your account information",
+    "customizeExperience": "Customize your experience",
+    "currentPasswordRequired": "Current password is required"
   },
   "transactions": {
     "title": "Transactions",
@@ -81,25 +102,50 @@
     "receipt": "Receipt",
     "uploadReceipt": "Upload Receipt",
     "viewReceipt": "View Receipt",
-    "deleteReceipt": "Delete Receipt"
+    "deleteReceipt": "Delete Receipt",
+    "transactionAdded": "added",
+    "transactionDeleted": "Transaction deleted",
+    "transactionUpdated": "Transaction updated"
   },
   "dashboard": {
     "title": "Dashboard",
+    "subtitle": "Track your income and expenses",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
     "netSavings": "Net Savings",
     "thisMonth": "This Month",
-    "recentTransactions": "Recent Transactions"
+    "recentTransactions": "Recent Transactions",
+    "filteredIncome": "Filtered Income",
+    "filteredExpenses": "Filtered Expenses",
+    "allTimeIncome": "All Time Income",
+    "allTimeExpenses": "All Time Expenses",
+    "cashFlow": "Cash Flow",
+    "allTimeNet": "All Time Net",
+    "filteredTransactions": "Filtered Transactions",
+    "allTransactions": "All Transactions",
+    "expenseBreakdown": "Expense Breakdown",
+    "incomeSources": "Income Sources",
+    "noExpenses": "No expenses recorded",
+    "noIncome": "No income recorded",
+    "footerNote": "Data stored locally. Export to CSV and save to iCloud Drive for backup."
   },
   "goals": {
     "title": "Financial Goals",
+    "subtitle": "Set savings targets and track your progress",
     "addGoal": "Add Goal",
     "targetAmount": "Target Amount",
     "currentAmount": "Current Amount",
     "deadline": "Deadline",
     "progress": "Progress",
     "completed": "Completed",
-    "inProgress": "In Progress"
+    "inProgress": "In Progress",
+    "activeGoals": "Active Goals",
+    "active": "Active",
+    "overallProgress": "Overall Progress",
+    "monthlySavings": "Monthly Savings",
+    "threeMonthAverage": "3-month average",
+    "noActiveGoals": "No active goals yet. Create your first financial goal!",
+    "noCompletedGoals": "No completed goals yet. Keep working towards your targets!"
   },
   "recurring": {
     "title": "Recurring",
@@ -111,5 +157,15 @@
     "active": "Active",
     "inactive": "Inactive",
     "generateTransactions": "Generate Transactions"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "subtitle": "Track your stocks and crypto investments",
+    "yourHoldings": "Your Holdings",
+    "addHolding": "Add Holding",
+    "totalValue": "Total Value",
+    "totalGain": "Total Gain",
+    "bestPerformer": "Best Performer",
+    "worstPerformer": "Worst Performer"
   }
 }

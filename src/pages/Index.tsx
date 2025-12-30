@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTransactions } from '@/hooks/useTransactions';
 import { StatCard } from '@/components/StatCard';
 import { TransactionForm } from '@/components/TransactionForm';
@@ -16,6 +17,7 @@ import { toast } from 'sonner';
 import { parseISO, isWithinInterval } from 'date-fns';
 
 const Index = () => {
+  const { t, i18n } = useTranslation();
   const {
     transactions,
     categories,
@@ -119,17 +121,17 @@ const Index = () => {
 
   const handleAddTransaction = (transaction: Parameters<typeof addTransaction>[0]) => {
     addTransaction(transaction);
-    toast.success(`${transaction.type === 'income' ? 'Income' : 'Expense'} added`);
+    toast.success(`${transaction.type === 'income' ? t('transactions.income') : t('transactions.expense')} ${t('transactions.transactionAdded')}`);
   };
 
   const handleDeleteTransaction = (id: string) => {
     deleteTransaction(id);
-    toast.success('Transaction deleted');
+    toast.success(t('transactions.transactionDeleted'));
   };
 
   const handleUpdateTransaction = (id: string, updates: Parameters<typeof updateTransaction>[1]) => {
     updateTransaction(id, updates);
-    toast.success('Transaction updated');
+    toast.success(t('transactions.transactionUpdated'));
   };
 
   const handleReceiptUpdate = (id: string, receiptUrl: string | null) => {
@@ -141,7 +143,7 @@ const Index = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-foreground border-t-transparent animate-spin mx-auto" />
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -153,11 +155,11 @@ const Index = () => {
       <div className="container px-4 sm:px-6 lg:px-8 py-4 md:py-6 border-b-2 border-border">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-1 hidden sm:block">Track your income and expenses</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">{t('dashboard.title')}</h1>
+            <p className="text-sm text-muted-foreground mt-1 hidden sm:block">{t('dashboard.subtitle')}</p>
           </div>
           <div className="border-2 border-border px-2 sm:px-4 py-1.5 sm:py-2 font-mono text-xs sm:text-sm flex-shrink-0">
-            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            {new Date().toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
           </div>
         </div>
       </div>
@@ -166,28 +168,28 @@ const Index = () => {
         {/* Stats Grid */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           <StatCard
-            title={dateRange ? "Filtered Income" : "All Time Income"}
+            title={dateRange ? t('dashboard.filteredIncome') : t('dashboard.allTimeIncome')}
             value={formatCurrency(filteredTotals.income)}
             icon={TrendingUp}
             variant="income"
           />
           <StatCard
-            title={dateRange ? "Filtered Expenses" : "All Time Expenses"}
+            title={dateRange ? t('dashboard.filteredExpenses') : t('dashboard.allTimeExpenses')}
             value={formatCurrency(filteredTotals.expenses)}
             icon={TrendingDown}
             variant="expense"
           />
           <StatCard
-            title="Cash Flow"
+            title={t('dashboard.cashFlow')}
             value={formatCurrency(filteredTotals.cashFlow)}
-            subtitle={filteredTotals.cashFlow >= 0 ? 'Positive' : 'Negative'}
+            subtitle={filteredTotals.cashFlow >= 0 ? t('common.positive') : t('common.negative')}
             icon={Activity}
             variant={filteredTotals.cashFlow >= 0 ? 'income' : 'expense'}
           />
           <StatCard
-            title="All Time Net"
+            title={t('dashboard.allTimeNet')}
             value={formatCurrency(allTimeTotals.cashFlow)}
-            subtitle={`${allTimeTotals.transactionCount} transactions`}
+            subtitle={`${allTimeTotals.transactionCount} ${t('common.transactions')}`}
             icon={Wallet}
             variant="neutral"
           />
@@ -236,13 +238,13 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <CategoryBreakdown
                 data={filteredExpenseBreakdown}
-                title="Expense Breakdown"
-                emptyMessage="No expenses recorded"
+                title={t('dashboard.expenseBreakdown')}
+                emptyMessage={t('dashboard.noExpenses')}
               />
               <CategoryBreakdown
                 data={filteredIncomeBreakdown}
-                title="Income Sources"
-                emptyMessage="No income recorded"
+                title={t('dashboard.incomeSources')}
+                emptyMessage={t('dashboard.noIncome')}
               />
             </div>
           </div>
@@ -252,10 +254,10 @@ const Index = () => {
         <section className="mt-6 md:mt-8">
           <div className="flex items-center justify-between mb-3 md:mb-4 gap-2">
             <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide truncate">
-              {dateRange ? 'Filtered Transactions' : 'All Transactions'}
+              {dateRange ? t('dashboard.filteredTransactions') : t('dashboard.allTransactions')}
             </h2>
             <span className="text-xs md:text-sm text-muted-foreground font-mono flex-shrink-0">
-              {filteredTotals.transactionCount} transactions
+              {filteredTotals.transactionCount} {t('common.transactions')}
             </span>
           </div>
           <TransactionList
@@ -272,7 +274,7 @@ const Index = () => {
       <footer className="border-t-2 border-border mt-12">
         <div className="container py-6">
           <p className="text-sm text-muted-foreground text-center">
-            Data stored locally. Export to CSV and save to iCloud Drive for backup.
+            {t('dashboard.footerNote')}
           </p>
         </div>
       </footer>

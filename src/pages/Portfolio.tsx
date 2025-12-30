@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { usePortfolio } from '@/hooks/usePortfolio';
 import { PortfolioForm } from '@/components/PortfolioForm';
 import { PortfolioList } from '@/components/PortfolioList';
@@ -8,6 +9,7 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
 const Portfolio = () => {
+  const { t } = useTranslation();
   const {
     holdings,
     prices,
@@ -27,12 +29,12 @@ const Portfolio = () => {
 
   const handleAddHolding = (holding: Parameters<typeof addHolding>[0]) => {
     addHolding(holding);
-    toast.success('Holding added to portfolio');
+    toast.success(t('common.holdingAdded'));
   };
 
   const handleDelete = (id: string) => {
     deleteHolding(id);
-    toast.success('Holding removed');
+    toast.success(t('common.holdingRemoved'));
   };
 
   const handleRefresh = async () => {
@@ -40,7 +42,7 @@ const Portfolio = () => {
     if (error) {
       toast.error(error);
     } else {
-      toast.success('Prices updated');
+      toast.success(t('common.pricesUpdated'));
     }
   };
 
@@ -49,7 +51,7 @@ const Portfolio = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-foreground border-t-transparent animate-spin mx-auto" />
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -61,13 +63,13 @@ const Portfolio = () => {
       <div className="container py-6 border-b-2 border-border hidden lg:block">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Portfolio</h1>
-            <p className="text-muted-foreground mt-1">Track your stocks and crypto investments</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('portfolio.title')}</h1>
+            <p className="text-muted-foreground mt-1">{t('portfolio.subtitle')}</p>
           </div>
           <div className="flex items-center gap-3">
             {lastUpdated && (
               <span className="text-sm text-muted-foreground">
-                Updated {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+                {t('common.updated')} {formatDistanceToNow(lastUpdated, { addSuffix: true })}
               </span>
             )}
             <Button 
@@ -81,11 +83,11 @@ const Portfolio = () => {
               ) : (
                 <RefreshCw className="h-4 w-4 mr-2" />
               )}
-              Refresh Prices
+              {t('common.refreshPrices')}
             </Button>
             <Button onClick={exportToCSV} variant="outline" className="border-2">
               <Download className="h-4 w-4 mr-2" />
-              Export CSV
+              {t('common.exportCSV')}
             </Button>
           </div>
         </div>
@@ -115,9 +117,9 @@ const Portfolio = () => {
           {/* Right Column - List */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold uppercase tracking-wide">Your Holdings</h2>
+              <h2 className="text-xl font-bold uppercase tracking-wide">{t('portfolio.yourHoldings')}</h2>
               <span className="text-sm text-muted-foreground font-mono">
-                {holdings.length} asset{holdings.length !== 1 ? 's' : ''}
+                {holdings.length} {t('common.assets')}
               </span>
             </div>
             <PortfolioList

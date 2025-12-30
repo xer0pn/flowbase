@@ -16,7 +16,23 @@
     "search": "Buscar",
     "filter": "Filtrar",
     "export": "Exportar",
-    "import": "Importar"
+    "import": "Importar",
+    "exportCSV": "Exportar CSV",
+    "transactions": "transacciones",
+    "assets": "activos",
+    "positive": "Positivo",
+    "negative": "Negativo",
+    "updated": "Actualizado",
+    "refreshPrices": "Actualizar Precios",
+    "holdingAdded": "Activo añadido al portafolio",
+    "holdingRemoved": "Activo eliminado",
+    "pricesUpdated": "Precios actualizados",
+    "goalCreated": "Meta creada",
+    "goalDeleted": "Meta eliminada",
+    "fundsAdded": "Fondos añadidos",
+    "hasBeenAdded": "ha sido añadido",
+    "hasBeenRemoved": "ha sido eliminado",
+    "addedToGoal": "añadido a la meta"
   },
   "nav": {
     "dashboard": "Panel",
@@ -52,7 +68,8 @@
     "invalidCredentials": "Correo o contraseña inválidos. Intenta de nuevo.",
     "emailRequired": "Por favor ingresa un correo válido",
     "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
-    "passwordsNoMatch": "Las contraseñas no coinciden"
+    "passwordsNoMatch": "Las contraseñas no coinciden",
+    "currentPasswordIncorrect": "La contraseña actual es incorrecta"
   },
   "settings": {
     "title": "Configuración",
@@ -65,7 +82,11 @@
     "theme": "Tema",
     "darkMode": "Modo Oscuro",
     "lightMode": "Modo Claro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "accountPreferences": "Gestiona las preferencias de tu cuenta",
+    "accountInfo": "Información de tu cuenta",
+    "customizeExperience": "Personaliza tu experiencia",
+    "currentPasswordRequired": "Se requiere la contraseña actual"
   },
   "transactions": {
     "title": "Transacciones",
@@ -81,25 +102,50 @@
     "receipt": "Recibo",
     "uploadReceipt": "Subir Recibo",
     "viewReceipt": "Ver Recibo",
-    "deleteReceipt": "Eliminar Recibo"
+    "deleteReceipt": "Eliminar Recibo",
+    "transactionAdded": "añadido",
+    "transactionDeleted": "Transacción eliminada",
+    "transactionUpdated": "Transacción actualizada"
   },
   "dashboard": {
     "title": "Panel",
+    "subtitle": "Rastrea tus ingresos y gastos",
     "totalIncome": "Ingresos Totales",
     "totalExpenses": "Gastos Totales",
     "netSavings": "Ahorros Netos",
     "thisMonth": "Este Mes",
-    "recentTransactions": "Transacciones Recientes"
+    "recentTransactions": "Transacciones Recientes",
+    "filteredIncome": "Ingresos Filtrados",
+    "filteredExpenses": "Gastos Filtrados",
+    "allTimeIncome": "Ingresos Totales",
+    "allTimeExpenses": "Gastos Totales",
+    "cashFlow": "Flujo de Caja",
+    "allTimeNet": "Neto Total",
+    "filteredTransactions": "Transacciones Filtradas",
+    "allTransactions": "Todas las Transacciones",
+    "expenseBreakdown": "Desglose de Gastos",
+    "incomeSources": "Fuentes de Ingresos",
+    "noExpenses": "Sin gastos registrados",
+    "noIncome": "Sin ingresos registrados",
+    "footerNote": "Datos guardados localmente. Exporta a CSV y guarda en iCloud Drive para respaldo."
   },
   "goals": {
     "title": "Metas Financieras",
+    "subtitle": "Establece metas de ahorro y rastrea tu progreso",
     "addGoal": "Añadir Meta",
     "targetAmount": "Monto Objetivo",
     "currentAmount": "Monto Actual",
     "deadline": "Fecha Límite",
     "progress": "Progreso",
     "completed": "Completado",
-    "inProgress": "En Progreso"
+    "inProgress": "En Progreso",
+    "activeGoals": "Metas Activas",
+    "active": "Activo",
+    "overallProgress": "Progreso General",
+    "monthlySavings": "Ahorros Mensuales",
+    "threeMonthAverage": "Promedio de 3 meses",
+    "noActiveGoals": "No hay metas activas aún. ¡Crea tu primera meta financiera!",
+    "noCompletedGoals": "No hay metas completadas aún. ¡Sigue trabajando hacia tus objetivos!"
   },
   "recurring": {
     "title": "Recurrente",
@@ -111,5 +157,15 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "generateTransactions": "Generar Transacciones"
+  },
+  "portfolio": {
+    "title": "Portafolio",
+    "subtitle": "Rastrea tus inversiones en acciones y criptomonedas",
+    "yourHoldings": "Tus Activos",
+    "addHolding": "Añadir Activo",
+    "totalValue": "Valor Total",
+    "totalGain": "Ganancia Total",
+    "bestPerformer": "Mejor Rendimiento",
+    "worstPerformer": "Peor Rendimiento"
   }
 }

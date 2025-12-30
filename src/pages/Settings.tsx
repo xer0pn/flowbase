@@ -30,16 +30,13 @@ export default function Settings() {
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
-    // Handle RTL for Arabic
-    const isRtl = languages.find(l => l.code === lang)?.rtl;
-    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
   };
 
   const validatePasswordForm = () => {
     const newErrors: typeof errors = {};
     
     if (!currentPassword) {
-      newErrors.current = 'Current password is required';
+      newErrors.current = t('settings.currentPasswordRequired');
     }
 
     try {
@@ -73,7 +70,7 @@ export default function Settings() {
     if (signInError) {
       toast({
         title: t('common.error'),
-        description: 'Current password is incorrect',
+        description: t('auth.currentPasswordIncorrect'),
         variant: 'destructive',
       });
       setIsChangingPassword(false);
@@ -108,7 +105,7 @@ export default function Settings() {
     <div className="p-6 max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{t('settings.title')}</h1>
-        <p className="text-muted-foreground mt-1">Manage your account preferences</p>
+        <p className="text-muted-foreground mt-1">{t('settings.accountPreferences')}</p>
       </div>
 
       {/* Profile Section */}
@@ -118,7 +115,7 @@ export default function Settings() {
             <User className="h-5 w-5 text-primary" />
             <CardTitle>{t('settings.profile')}</CardTitle>
           </div>
-          <CardDescription>Your account information</CardDescription>
+          <CardDescription>{t('settings.accountInfo')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -135,7 +132,7 @@ export default function Settings() {
             <Globe className="h-5 w-5 text-primary" />
             <CardTitle>{t('settings.preferences')}</CardTitle>
           </div>
-          <CardDescription>Customize your experience</CardDescription>
+          <CardDescription>{t('settings.customizeExperience')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
