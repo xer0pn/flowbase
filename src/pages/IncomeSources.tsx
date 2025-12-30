@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, TrendingUp, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -17,6 +18,7 @@ function formatCurrency(value: number): string {
 }
 
 const IncomeSources = () => {
+  const { t } = useTranslation();
   const { addTransaction } = useTransactions();
 
   const {
@@ -42,36 +44,36 @@ const IncomeSources = () => {
     if (!isLoading) {
       const generated = checkAndGenerateTransactions();
       if (generated && generated > 0) {
-        toast.success(`Auto-recorded ${generated} income transaction(s)`);
+        toast.success(`${t('recurring.autoRecordedIncome').replace('(s)', generated > 1 ? 's' : '')}`);
       }
     }
-  }, [isLoading, checkAndGenerateTransactions]);
+  }, [isLoading, checkAndGenerateTransactions, t]);
 
   const handleAddSource = (source: Parameters<typeof addSource>[0]) => {
     addSource(source);
-    toast.success('Income source added');
+    toast.success(t('recurring.incomeSourceAdded'));
   };
 
   const handleUpdate = (id: string, updates: Parameters<typeof updateSource>[1]) => {
     updateSource(id, updates);
-    toast.success('Income source updated');
+    toast.success(t('recurring.incomeSourceUpdated'));
   };
 
   const handleDelete = (id: string) => {
     deleteSource(id);
-    toast.success('Income source deleted');
+    toast.success(t('recurring.incomeSourceDeleted'));
   };
 
   const handleToggleActive = (id: string) => {
     toggleActive(id);
     const source = sources.find(s => s.id === id);
-    toast.success(source?.isActive ? 'Income source paused' : 'Income source resumed');
+    toast.success(source?.isActive ? t('recurring.incomeSourcePaused') : t('recurring.incomeSourceResumed'));
   };
 
   const handleGenerateNow = (id: string) => {
     const success = generateNow(id);
     if (success) {
-      toast.success('Income recorded successfully');
+      toast.success(t('recurring.incomeRecorded'));
     }
   };
 
@@ -80,7 +82,7 @@ const IncomeSources = () => {
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{t('common.loading')}</p>
       </div>
     );
   }
@@ -90,9 +92,9 @@ const IncomeSources = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Income Sources</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('nav.incomeSources')}</h1>
           <p className="text-muted-foreground">
-            Manage your recurring income streams
+            {t('recurring.manageIncomeStreams')}
           </p>
         </div>
         <RecurringIncomeForm onSubmit={handleAddSource} />
@@ -102,7 +104,7 @@ const IncomeSources = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Expected Monthly</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('recurring.expectedMonthly')}</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -110,27 +112,27 @@ const IncomeSources = () => {
               {formatCurrency(getTotalExpectedMonthly())}
             </div>
             <p className="text-xs text-muted-foreground">
-              From all active sources
+              {t('recurring.fromAllActiveSources')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sources</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('recurring.activeSources')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{getActiveCount()}</div>
             <p className="text-xs text-muted-foreground">
-              {sources.length - getActiveCount()} paused
+              {sources.length - getActiveCount()} {t('common.paused')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Next Expected</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('recurring.nextExpected')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -138,7 +140,7 @@ const IncomeSources = () => {
               {nextPayment ? format(nextPayment, 'MMM d') : '—'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {nextPayment ? format(nextPayment, 'yyyy') : 'No upcoming payments'}
+              {nextPayment ? format(nextPayment, 'yyyy') : t('common.noUpcomingPayments')}
             </p>
           </CardContent>
         </Card>
@@ -146,7 +148,7 @@ const IncomeSources = () => {
 
       {/* Income Sources List */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Your Income Sources</h2>
+        <h2 className="text-lg font-semibold">{t('recurring.yourIncomeSources')}</h2>
         <RecurringIncomeList
           sources={sources}
           onUpdate={handleUpdate}

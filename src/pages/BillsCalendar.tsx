@@ -7,6 +7,7 @@ import { format, startOfMonth, endOfMonth, isSameDay, addMonths, parseISO, isBef
 import { CalendarDays, ArrowUpRight, CreditCard, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PaymentEvent {
   id: string;
@@ -19,6 +20,7 @@ interface PaymentEvent {
 }
 
 const BillsCalendar = () => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -152,30 +154,30 @@ const BillsCalendar = () => {
           <CalendarDays className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Bills Calendar</h1>
-          <p className="text-muted-foreground">View all upcoming payments in one place</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('billsCalendar.title')}</h1>
+          <p className="text-muted-foreground">{t('billsCalendar.subtitle')}</p>
         </div>
       </div>
 
       {/* Monthly Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="border-2 border-border p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Expected Income</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('billsCalendar.expectedIncome')}</p>
           <p className="text-xl font-mono font-bold text-income">+{formatCurrency(monthlyTotals.income)}</p>
         </div>
         <div className="border-2 border-border p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Recurring Bills</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('billsCalendar.recurringBills')}</p>
           <p className="text-xl font-mono font-bold text-expense">-{formatCurrency(monthlyTotals.expenses)}</p>
         </div>
         <div className="border-2 border-border p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Installments</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('installments.title')}</p>
           <p className="text-xl font-mono font-bold text-orange-500">-{formatCurrency(monthlyTotals.installmentPayments)}</p>
         </div>
         <div className={cn(
           "border-2 p-4",
           monthlyTotals.net >= 0 ? "border-income bg-income/5" : "border-expense bg-expense/5"
         )}>
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Net Flow</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('billsCalendar.netFlow')}</p>
           <p className={cn(
             "text-xl font-mono font-bold",
             monthlyTotals.net >= 0 ? "text-income" : "text-expense"
@@ -211,15 +213,15 @@ const BillsCalendar = () => {
           <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-border">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-income" />
-              <span className="text-sm text-muted-foreground">Income</span>
+              <span className="text-sm text-muted-foreground">{t('transactions.income')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-expense" />
-              <span className="text-sm text-muted-foreground">Expense</span>
+              <span className="text-sm text-muted-foreground">{t('transactions.expense')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-orange-500" />
-              <span className="text-sm text-muted-foreground">Installment</span>
+              <span className="text-sm text-muted-foreground">{t('installments.title')}</span>
             </div>
           </div>
         </div>
@@ -229,11 +231,11 @@ const BillsCalendar = () => {
           {/* Selected Date Events */}
           <div className="border-2 border-border p-6">
             <h3 className="text-lg font-bold uppercase tracking-wide mb-4">
-              {selectedDate ? format(selectedDate, 'MMM d, yyyy') : 'Select a date'}
+              {selectedDate ? format(selectedDate, 'MMM d, yyyy') : t('common.selectDate')}
             </h3>
             
             {selectedDateEvents.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No payments scheduled</p>
+              <p className="text-muted-foreground text-sm">{t('common.noPaymentsScheduled')}</p>
             ) : (
               <div className="space-y-3">
                 {selectedDateEvents.map(event => (
@@ -261,10 +263,10 @@ const BillsCalendar = () => {
 
           {/* Upcoming Payments */}
           <div className="border-2 border-border p-6">
-            <h3 className="text-lg font-bold uppercase tracking-wide mb-4">Upcoming This Month</h3>
+            <h3 className="text-lg font-bold uppercase tracking-wide mb-4">{t('billsCalendar.upcomingThisMonth')}</h3>
             
             {paymentEvents.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No payments this month</p>
+              <p className="text-muted-foreground text-sm">{t('billsCalendar.noPaymentsThisMonth')}</p>
             ) : (
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
                 {paymentEvents.slice(0, 15).map(event => (
@@ -281,7 +283,7 @@ const BillsCalendar = () => {
                         <p className="text-sm font-medium">{event.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {format(event.date, 'MMM d')}
-                          {event.isOverdue && <span className="text-destructive ml-1">(Overdue)</span>}
+                          {event.isOverdue && <span className="text-destructive ml-1">({t('common.overdue')})</span>}
                         </p>
                       </div>
                     </div>
@@ -295,7 +297,7 @@ const BillsCalendar = () => {
                 ))}
                 {paymentEvents.length > 15 && (
                   <p className="text-xs text-muted-foreground text-center pt-2">
-                    +{paymentEvents.length - 15} more
+                    +{paymentEvents.length - 15} {t('common.moreTransactions')}
                   </p>
                 )}
               </div>
