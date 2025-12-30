@@ -148,23 +148,23 @@ const Index = () => {
   }
 
   return (
-    <div className="bg-background">
+    <div className="bg-background min-h-screen">
       {/* Page Header */}
-      <div className="container py-6 border-b-2 border-border hidden lg:block">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Track your income and expenses</p>
+      <div className="container px-4 sm:px-6 lg:px-8 py-4 md:py-6 border-b-2 border-border">
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">Dashboard</h1>
+            <p className="text-sm text-muted-foreground mt-1 hidden sm:block">Track your income and expenses</p>
           </div>
-          <div className="border-2 border-border px-4 py-2 font-mono text-sm">
+          <div className="border-2 border-border px-2 sm:px-4 py-1.5 sm:py-2 font-mono text-xs sm:text-sm flex-shrink-0">
             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </div>
         </div>
       </div>
 
-      <div className="container py-8">
+      <div className="container px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Stats Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           <StatCard
             title={dateRange ? "Filtered Income" : "All Time Income"}
             value={formatCurrency(filteredTotals.income)}
@@ -194,9 +194,9 @@ const Index = () => {
         </section>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {/* Left Column - Form, Filter & CSV */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <TransactionForm
               categories={categories}
               onSubmit={handleAddTransaction}
@@ -219,7 +219,7 @@ const Index = () => {
           </div>
 
           {/* Middle Column - Charts */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             <IncomeGrowthTracker
               transactions={transactions}
               categories={categories}
@@ -233,7 +233,7 @@ const Index = () => {
             
             <CashFlowChart data={monthlyData} />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <CategoryBreakdown
                 data={filteredExpenseBreakdown}
                 title="Expense Breakdown"
@@ -249,12 +249,12 @@ const Index = () => {
         </div>
 
         {/* Transaction History */}
-        <section className="mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold uppercase tracking-wide">
+        <section className="mt-6 md:mt-8">
+          <div className="flex items-center justify-between mb-3 md:mb-4 gap-2">
+            <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide truncate">
               {dateRange ? 'Filtered Transactions' : 'All Transactions'}
             </h2>
-            <span className="text-sm text-muted-foreground font-mono">
+            <span className="text-xs md:text-sm text-muted-foreground font-mono flex-shrink-0">
               {filteredTotals.transactionCount} transactions
             </span>
           </div>
