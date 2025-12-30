@@ -14,8 +14,19 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
-    const isRtl = languages.find(l => l.code === lang)?.rtl;
+    const selectedLang = languages.find(l => l.code === lang);
+    const isRtl = selectedLang?.rtl;
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    
+    // Apply language-specific font class
+    document.documentElement.classList.remove('font-ar', 'font-zh', 'font-default');
+    if (lang === 'ar') {
+      document.documentElement.classList.add('font-ar');
+    } else if (lang === 'zh') {
+      document.documentElement.classList.add('font-zh');
+    } else {
+      document.documentElement.classList.add('font-default');
+    }
   };
 
   const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
