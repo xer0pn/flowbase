@@ -56,8 +56,10 @@ export function RecurringExpenseList({
   const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const getCategoryName = (categoryId: string) => {
-    return DEFAULT_CATEGORIES.find(c => c.id === categoryId)?.name || categoryId;
+  const getCategoryName = (categoryId: string | null) => {
+    if (!categoryId) return 'Uncategorized';
+    const category = DEFAULT_CATEGORIES.find(c => c.id === categoryId);
+    return category?.name || 'Uncategorized';
   };
 
   const handleEditSubmit = (data: Omit<RecurringExpense, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -144,7 +146,7 @@ export function RecurringExpenseList({
                           </>
                         )}
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => setDeleteId(expense.id)}
                         className="text-destructive"
                       >
@@ -177,7 +179,7 @@ export function RecurringExpenseList({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Recurring Expense?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this recurring expense. 
+              This will permanently delete this recurring expense.
               Past transactions will not be affected.
             </AlertDialogDescription>
           </AlertDialogHeader>

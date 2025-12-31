@@ -57,8 +57,10 @@ export function RecurringIncomeList({
   const [editingSource, setEditingSource] = useState<RecurringIncome | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const getCategoryName = (categoryId: string) => {
-    return DEFAULT_CATEGORIES.find(c => c.id === categoryId)?.name || categoryId;
+  const getCategoryName = (categoryId: string | null) => {
+    if (!categoryId) return 'Uncategorized';
+    const category = DEFAULT_CATEGORIES.find(c => c.id === categoryId);
+    return category?.name || 'Uncategorized';
   };
 
   const handleEditSubmit = (data: Omit<RecurringIncome, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -145,7 +147,7 @@ export function RecurringIncomeList({
                           </>
                         )}
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => setDeleteId(source.id)}
                         className="text-destructive"
                       >
@@ -178,7 +180,7 @@ export function RecurringIncomeList({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Income Source?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this recurring income source. 
+              This will permanently delete this recurring income source.
               Past transactions will not be affected.
             </AlertDialogDescription>
           </AlertDialogHeader>

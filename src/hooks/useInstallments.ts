@@ -63,28 +63,36 @@ export function useInstallments(options?: UseInstallmentsOptions) {
   // Auto-update status based on due dates
   const updateStatuses = useCallback(async () => {
     const today = startOfDay(new Date());
-    
+    let hasUpdates = false;
+
     for (const inst of installments) {
       if (inst.status === 'completed') continue;
-      
+
       const dueDate = parseISO(inst.nextDueDate);
       if (isBefore(dueDate, today) && inst.completedPayments < inst.totalPayments && inst.status !== 'overdue') {
         await supabase
           .from('installments')
           .update({ status: 'overdue' })
           .eq('id', inst.id);
+        hasUpdates = true;
       }
     }
-    
-    // Refresh after status updates
-    fetchData();
+
+    // Only refresh if we actually made updates
+    if (hasUpdates) {
+      fetchData();
+    }
   }, [installments, fetchData]);
 
+  // Only check statuses once after initial load
+  const [hasCheckedStatuses, setHasCheckedStatuses] = useState(false);
+
   useEffect(() => {
-    if (!isLoading && installments.length > 0) {
+    if (!isLoading && installments.length > 0 && !hasCheckedStatuses) {
       updateStatuses();
+      setHasCheckedStatuses(true);
     }
-  }, [isLoading]);
+  }, [isLoading, installments.length, hasCheckedStatuses, updateStatuses]);
 
   const addInstallment = useCallback(async (installment: Omit<Installment, 'id' | 'createdAt' | 'updatedAt' | 'remainingAmount' | 'status'>) => {
     if (!user) return null;
@@ -163,20 +171,20 @@ export function useInstallments(options?: UseInstallmentsOptions) {
 
     setInstallments(prev => prev.map(inst => {
       if (inst.id !== id) return inst;
-      
+
       const updated = { ...inst, ...updates, updatedAt: new Date().toISOString() };
-      
+
       // Recalculate remaining amount if relevant fields changed
-      if (updates.totalAmount !== undefined || updates.downPayment !== undefined || 
-          updates.monthlyPayment !== undefined || updates.completedPayments !== undefined) {
+      if (updates.totalAmount !== undefined || updates.downPayment !== undefined ||
+        updates.monthlyPayment !== undefined || updates.completedPayments !== undefined) {
         updated.remainingAmount = updated.totalAmount - updated.downPayment - (updated.monthlyPayment * updated.completedPayments);
       }
-      
+
       // Update status if completed
       if (updated.completedPayments >= updated.totalPayments) {
         updated.status = 'completed';
       }
-      
+
       return updated;
     }));
   }, []);
@@ -220,7 +228,7 @@ export function useInstallments(options?: UseInstallmentsOptions) {
     const newCompleted = Math.min(installment.completedPayments + 1, installment.totalPayments);
     const newRemaining = installment.totalAmount - installment.downPayment - (installment.monthlyPayment * newCompleted);
     const newStatus: InstallmentStatus = newCompleted >= installment.totalPayments ? 'completed' : 'active';
-    
+
     // Calculate next due date (add 1 month)
     const currentDue = parseISO(installment.nextDueDate);
     const nextDue = new Date(currentDue);

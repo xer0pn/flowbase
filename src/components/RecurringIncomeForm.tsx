@@ -70,7 +70,7 @@ export function RecurringIncomeForm({
 
     onSubmit({
       name,
-      categoryId: null, // Set to null since we're using DEFAULT_CATEGORIES without DB UUIDs
+      categoryId: categoryName, // Save the selected category ID
       amount: parseFloat(amount),
       frequency,
       dayOfMonth: parseInt(dayOfMonth),
@@ -106,7 +106,7 @@ export function RecurringIncomeForm({
           </SelectTrigger>
           <SelectContent>
             {incomeCategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.name}>
+              <SelectItem key={cat.id} value={cat.id}>
                 {cat.name}
               </SelectItem>
             ))}
