@@ -70,7 +70,7 @@ export function RecurringIncomeForm({
 
     onSubmit({
       name,
-      categoryId: categoryName, // Save the selected category ID
+      categoryId: categoryName, // Now works with TEXT column
       amount: parseFloat(amount),
       frequency,
       dayOfMonth: parseInt(dayOfMonth),
