@@ -31,16 +31,16 @@ interface RecurringIncomeFormProps {
 
 const incomeCategories = DEFAULT_CATEGORIES.filter(c => c.type === 'income');
 
-export function RecurringIncomeForm({ 
-  onSubmit, 
-  editingSource, 
+export function RecurringIncomeForm({
+  onSubmit,
+  editingSource,
   onClose,
   isOpen,
-  onOpenChange 
+  onOpenChange
 }: RecurringIncomeFormProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(editingSource?.name || '');
-  const [categoryId, setCategoryId] = useState(editingSource?.categoryId || '');
+  const [categoryName, setCategoryName] = useState(editingSource?.categoryId || '');
   const [amount, setAmount] = useState(editingSource?.amount?.toString() || '');
   const [frequency, setFrequency] = useState<RecurringFrequency>(editingSource?.frequency || 'monthly');
   const [dayOfMonth, setDayOfMonth] = useState(editingSource?.dayOfMonth?.toString() || '1');
@@ -54,7 +54,7 @@ export function RecurringIncomeForm({
   const resetForm = () => {
     if (!editingSource) {
       setName('');
-      setCategoryId('');
+      setCategoryName('');
       setAmount('');
       setFrequency('monthly');
       setDayOfMonth('1');
@@ -65,12 +65,12 @@ export function RecurringIncomeForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name || !categoryId || !amount) return;
+
+    if (!name || !categoryName || !amount) return;
 
     onSubmit({
       name,
-      categoryId,
+      categoryId: null, // Set to null since we're using DEFAULT_CATEGORIES without DB UUIDs
       amount: parseFloat(amount),
       frequency,
       dayOfMonth: parseInt(dayOfMonth),
@@ -100,13 +100,13 @@ export function RecurringIncomeForm({
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select value={categoryId} onValueChange={setCategoryId} required>
+        <Select value={categoryName} onValueChange={setCategoryName} required>
           <SelectTrigger>
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
             {incomeCategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
+              <SelectItem key={cat.id} value={cat.name}>
                 {cat.name}
               </SelectItem>
             ))}

@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Target, 
-  Trash2, 
-  Plus, 
+import {
+  Target,
+  Trash2,
+  Plus,
   Calendar,
   CheckCircle2,
   TrendingUp
@@ -34,12 +34,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: 'Other',
 };
 
-export function GoalCard({ 
-  goal, 
-  monthlySavingsRate, 
-  onUpdate, 
-  onDelete, 
-  onAddFunds 
+export function GoalCard({
+  goal,
+  monthlySavingsRate,
+  onUpdate,
+  onDelete,
+  onAddFunds
 }: GoalCardProps) {
   const [addAmount, setAddAmount] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -81,9 +81,8 @@ export function GoalCard({
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -157,7 +156,7 @@ export function GoalCard({
               </p>
               {daysRemaining !== null && (
                 <p className={`text-xs ${daysRemaining < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                  {daysRemaining < 0 
+                  {daysRemaining < 0
                     ? `${Math.abs(daysRemaining)} days overdue`
                     : `${daysRemaining} days left`
                   }
@@ -199,15 +198,15 @@ export function GoalCard({
                   step="0.01"
                   className="flex-1"
                 />
-                <Button 
-                  onClick={handleAddFunds} 
+                <Button
+                  onClick={handleAddFunds}
                   disabled={isAdding || !addAmount}
                   size="sm"
                 >
                   Add
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => {
                     setShowAddForm(false);
@@ -218,8 +217,8 @@ export function GoalCard({
                 </Button>
               </div>
             ) : (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => setShowAddForm(true)}
               >

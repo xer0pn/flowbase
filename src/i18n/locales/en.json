@@ -66,8 +66,8 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "incomeStatement": "Income Statement",
-    "incomeSources": "Income Sources",
+    "incomeStatement": "Transactions",
+    "incomeSources": "Recurring Income",
     "recurringExpenses": "Recurring Expenses",
     "billsCalendar": "Bills Calendar",
     "financialGoals": "Financial Goals",
@@ -75,6 +75,7 @@
     "cashFlow": "Cash Flow",
     "installments": "Installments",
     "portfolio": "Portfolio",
+    "docs": "Documentation",
     "settings": "Settings"
   },
   "auth": {
@@ -116,7 +117,22 @@
     "accountPreferences": "Manage your account preferences",
     "accountInfo": "Your account information",
     "customizeExperience": "Customize your experience",
-    "currentPasswordRequired": "Current password is required"
+    "currentPasswordRequired": "Current password is required",
+    "appearance": "Appearance",
+    "customizeColors": "Customize your theme colors",
+    "themeColors": "Theme Colors",
+    "financialColors": "Financial Colors",
+    "primaryColor": "Primary Color",
+    "primaryColorDesc": "Main color for buttons and links",
+    "accentColor": "Accent Color",
+    "accentColorDesc": "Color for highlights and hover states",
+    "incomeColor": "Income Color",
+    "incomeColorDesc": "Color for income transactions",
+    "expenseColor": "Expense Color",
+    "expenseColorDesc": "Color for expense transactions",
+    "presetThemes": "Preset Themes",
+    "resetToDefaults": "Reset to Defaults",
+    "themeReset": "Theme colors reset to defaults"
   },
   "transactions": {
     "title": "Transactions",

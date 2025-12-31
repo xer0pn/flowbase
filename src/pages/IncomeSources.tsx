@@ -47,11 +47,15 @@ const IncomeSources = () => {
         toast.success(`${t('recurring.autoRecordedIncome').replace('(s)', generated > 1 ? 's' : '')}`);
       }
     }
-  }, [isLoading, checkAndGenerateTransactions, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
-  const handleAddSource = (source: Parameters<typeof addSource>[0]) => {
-    addSource(source);
-    toast.success(t('recurring.incomeSourceAdded'));
+  const handleAddSource = async (source: Parameters<typeof addSource>[0]) => {
+    const result = await addSource(source);
+    if (result) {
+      toast.success(t('recurring.incomeSourceAdded'));
+    }
+    // Error toast is already shown by the hook
   };
 
   const handleUpdate = (id: string, updates: Parameters<typeof updateSource>[1]) => {

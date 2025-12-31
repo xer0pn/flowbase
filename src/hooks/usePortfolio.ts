@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { PortfolioHolding, PriceData, AssetCategory } from '@/types/finance';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const PRICES_CACHE_KEY = 'cashflow_prices_cache';
 
@@ -90,18 +91,95 @@ export function usePortfolio() {
         if (coinId && data[coinId]) result[ticker.toUpperCase()] = data[coinId].usd;
       });
       return result;
-    } catch (err) { console.error('Error fetching crypto prices:', err); return {}; }
+    } catch (err) { return {}; }
   }, []);
 
-  // Fetch stock prices via edge function
+  // Fetch stock prices directly from browser (no edge function needed)
   const fetchStockPrices = useCallback(async (tickers: string[]): Promise<Record<string, number>> => {
     if (tickers.length === 0) return {};
-    try {
-      const { data, error } = await supabase.functions.invoke('stock-prices', { body: { tickers } });
-      if (error) { console.error('Error fetching stock prices:', error); return {}; }
-      return data?.prices || {};
-    } catch (err) { console.error('Error fetching stock prices:', err); return {}; }
+
+    const prices: Record<string, number> = {};
+
+    // Fetch all tickers in parallel
+    const results = await Promise.allSettled(
+      tickers.map(ticker => fetchSingleStockPrice(ticker))
+    );
+
+    results.forEach((result, index) => {
+      const ticker = tickers[index];
+      if (result.status === 'fulfilled' && result.value) {
+        prices[ticker] = result.value;
+      }
+    });
+
+    return prices;
   }, []);
+
+  // Fetch a single stock price - using working public API
+  const fetchSingleStockPrice = async (ticker: string): Promise<number | null> => {
+    // Method 1: Yahoo Finance via public endpoint (most reliable)
+    let price = await fetchFromYahooPublic(ticker);
+    if (price) {
+      return price;
+    }
+
+    // Method 2: Fallback to purchase price if API fails
+    return null;
+  };
+
+  // Yahoo Finance public endpoint (works without API key)
+  const fetchFromYahooPublic = async (ticker: string): Promise<number | null> => {
+    try {
+      // This endpoint works from browsers without CORS issues
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+
+      // Extract current price from response
+      const result = data?.chart?.result?.[0];
+      if (!result) {
+        return null;
+      }
+
+      // Try to get the most recent price
+      const meta = result.meta;
+      const regularMarketPrice = meta?.regularMarketPrice;
+
+      if (regularMarketPrice && !isNaN(regularMarketPrice) && regularMarketPrice > 0) {
+        return regularMarketPrice;
+      }
+
+      // Fallback: get last close price from quote data
+      const quotes = result.indicators?.quote?.[0];
+      const closes = quotes?.close;
+
+      if (closes && Array.isArray(closes) && closes.length > 0) {
+        // Get the last non-null close price
+        for (let i = closes.length - 1; i >= 0; i--) {
+          const price = closes[i];
+          if (price && !isNaN(price) && price > 0) {
+            return price;
+          }
+        }
+      }
+
+      return null;
+
+    } catch (error) {
+      return null;
+    }
+  };
 
   // Fetch all prices
   const refreshPrices = useCallback(async () => {

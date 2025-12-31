@@ -16,7 +16,7 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
-  
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +41,7 @@ export default function ResetPassword() {
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
-    
+
     try {
       passwordSchema.parse(password);
     } catch (e) {
@@ -63,9 +63,9 @@ export default function ResetPassword() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
+
     const { error } = await supabase.auth.updateUser({ password });
-    
+
     if (error) {
       toast({
         title: 'Error',
@@ -80,7 +80,7 @@ export default function ResetPassword() {
       });
       setTimeout(() => navigate('/'), 2000);
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -104,7 +104,7 @@ export default function ResetPassword() {
         <CardHeader className="text-center border-b-2 border-border">
           <div className="flex items-center justify-center gap-2 mb-2">
             <DollarSign className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-bold">CashFlow</CardTitle>
+            <CardTitle className="text-2xl font-bold">FlowBase</CardTitle>
           </div>
           <CardDescription>
             {t('auth.resetPassword')}

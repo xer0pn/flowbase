@@ -80,7 +80,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="target-amount">Target Amount (SAR)</Label>
+              <Label htmlFor="target-amount">Target Amount</Label>
               <Input
                 id="target-amount"
                 type="number"
@@ -93,7 +93,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="current-amount">Current Amount (SAR)</Label>
+              <Label htmlFor="current-amount">Current Amount</Label>
               <Input
                 id="current-amount"
                 type="number"

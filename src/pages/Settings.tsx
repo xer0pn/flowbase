@@ -10,9 +10,12 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { languages } from '@/i18n';
-import { Loader2, User, Shield, Globe } from 'lucide-react';
+import { Loader2, User, Shield, Globe, Palette } from 'lucide-react';
 import { z } from 'zod';
 import { useTheme } from 'next-themes';
+import { ColorPicker } from '@/components/ColorPicker';
+import { PresetThemeSelector } from '@/components/PresetThemeSelector';
+import { useThemePreferences } from '@/hooks/useThemePreferences';
 
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
 
@@ -21,7 +24,8 @@ export default function Settings() {
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  
+  const { preferences, darkPreferences, updateColor, applyPreset, resetToDefaults } = useThemePreferences();
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,7 +38,7 @@ export default function Settings() {
 
   const validatePasswordForm = () => {
     const newErrors: typeof errors = {};
-    
+
     if (!currentPassword) {
       newErrors.current = t('settings.currentPasswordRequired');
     }
@@ -169,6 +173,88 @@ export default function Settings() {
               </SelectContent>
             </Select>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Appearance Section */}
+      <Card className="border-2 border-border">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Palette className="h-5 w-5 text-primary" />
+            <CardTitle>{t('settings.appearance')}</CardTitle>
+          </div>
+          <CardDescription>{t('settings.customizeColors')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Theme Colors */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide">
+              {t('settings.themeColors')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ColorPicker
+                label={t('settings.primaryColor')}
+                value={theme === 'dark' ? darkPreferences.primary : preferences.primary}
+                onChange={(value) => updateColor('primary', value, theme === 'dark')}
+                description={t('settings.primaryColorDesc')}
+              />
+              <ColorPicker
+                label={t('settings.accentColor')}
+                value={theme === 'dark' ? darkPreferences.accent : preferences.accent}
+                onChange={(value) => updateColor('accent', value, theme === 'dark')}
+                description={t('settings.accentColorDesc')}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Financial Colors */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide">
+              {t('settings.financialColors')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ColorPicker
+                label={t('settings.incomeColor')}
+                value={theme === 'dark' ? darkPreferences.income : preferences.income}
+                onChange={(value) => updateColor('income', value, theme === 'dark')}
+                description={t('settings.incomeColorDesc')}
+              />
+              <ColorPicker
+                label={t('settings.expenseColor')}
+                value={theme === 'dark' ? darkPreferences.expense : preferences.expense}
+                onChange={(value) => updateColor('expense', value, theme === 'dark')}
+                description={t('settings.expenseColorDesc')}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Preset Themes */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide">
+              {t('settings.presetThemes')}
+            </h3>
+            <PresetThemeSelector onSelect={applyPreset} />
+          </div>
+
+          <Separator />
+
+          {/* Reset Button */}
+          <Button
+            variant="outline"
+            onClick={() => {
+              resetToDefaults();
+              toast({
+                title: t('common.success'),
+                description: t('settings.themeReset'),
+              });
+            }}
+          >
+            {t('settings.resetToDefaults')}
+          </Button>
         </CardContent>
       </Card>
 

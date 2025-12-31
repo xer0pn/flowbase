@@ -20,7 +20,7 @@ export default function Auth() {
   const { user, isLoading: authLoading, signIn, signUp } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -36,7 +36,7 @@ export default function Auth() {
 
   const validateForm = (isSignUp: boolean) => {
     const newErrors: typeof errors = {};
-    
+
     try {
       emailSchema.parse(email);
     } catch (e) {
@@ -69,7 +69,7 @@ export default function Auth() {
 
     setIsSubmitting(true);
     const { error } = await signIn(email, password);
-    
+
     if (error) {
       toast({ title: t('auth.signIn') + ' Failed', description: error, variant: 'destructive' });
     } else {
@@ -84,11 +84,11 @@ export default function Auth() {
 
     setIsSubmitting(true);
     const { error } = await signUp(email, password);
-    
+
     if (error) {
       toast({ title: t('auth.signUp') + ' Failed', description: error, variant: 'destructive' });
     } else {
-      toast({ title: t('auth.accountCreated'), description: 'Welcome to CashFlow Tracker.' });
+      toast({ title: t('auth.accountCreated'), description: 'Welcome to FlowBase.' });
     }
     setIsSubmitting(false);
   };
@@ -125,7 +125,7 @@ export default function Auth() {
         <CardHeader className="text-center border-b-2 border-border">
           <div className="flex items-center justify-center gap-2 mb-2">
             <DollarSign className="h-8 w-8 text-primary" />
-            <CardTitle className="text-2xl font-bold">CashFlow</CardTitle>
+            <CardTitle className="text-2xl font-bold">FlowBase</CardTitle>
           </div>
           <CardDescription>Your personal financial tracker</CardDescription>
         </CardHeader>

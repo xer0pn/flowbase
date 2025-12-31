@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Transaction, Category, DEFAULT_CATEGORIES, MonthlyData, CategorySummary, CHART_COLORS, Budget, TransactionType, ActivityType } from '@/types/finance';
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { toast } from 'sonner';
 
 export function useTransactions() {
   const { user } = useAuth();
@@ -65,7 +66,7 @@ export function useTransactions() {
         type: c.type as TransactionType,
         color: c.color,
       })) || [];
-      
+
       // Use defaults if user has no custom categories yet
       setCategories(dbCategories.length > 0 ? dbCategories : DEFAULT_CATEGORIES);
 
@@ -160,6 +161,7 @@ export function useTransactions() {
 
     if (error) {
       console.error('Error deleting transaction:', error);
+      toast.error('Failed to delete transaction. Please try again.');
       return;
     }
 
@@ -270,6 +272,7 @@ export function useTransactions() {
 
     if (error) {
       console.error('Error deleting budget:', error);
+      toast.error('Failed to delete budget. Please try again.');
       return;
     }
 
@@ -306,15 +309,34 @@ export function useTransactions() {
         header: true,
         complete: async (results) => {
           const toInsert = results.data
-            .filter((row: any) => row.Date && row.Amount)
+            .filter((row: any) => {
+              // Validate required fields exist
+              if (!row.Date || !row.Amount) return false;
+
+              // Validate amount
+              const amount = parseFloat(row.Amount);
+              if (isNaN(amount) || amount <= 0 || amount > 999999999.99) return false;
+
+              // Validate date
+              const date = new Date(row.Date);
+              if (isNaN(date.getTime())) return false;
+
+              return true;
+            })
             .map((row: any) => ({
               user_id: user.id,
-              date: row.Date,
+              date: new Date(row.Date).toISOString().split('T')[0],
               type: row.Type?.toLowerCase() === 'income' ? 'income' : 'expense',
               category_name: row.Category || 'other-expense',
-              description: row.Description || '',
-              amount: parseFloat(row.Amount) || 0,
+              description: row.Description?.substring(0, 500) || '',
+              amount: Math.min(parseFloat(row.Amount), 999999999.99),
             }));
+
+          if (toInsert.length === 0) {
+            toast.error('No valid transactions found in CSV file');
+            resolve(0);
+            return;
+          }
 
           const { data, error } = await supabase
             .from('transactions')
@@ -322,6 +344,8 @@ export function useTransactions() {
             .select();
 
           if (error) {
+            console.error('CSV import error:', error);
+            toast.error('Failed to import transactions. Please check your CSV format.');
             reject(error);
             return;
           }
@@ -337,9 +361,12 @@ export function useTransactions() {
           })) || [];
 
           setTransactions(prev => [...imported, ...prev]);
+          toast.success(`Successfully imported ${imported.length} transactions`);
           resolve(imported.length);
         },
         error: (error) => {
+          console.error('CSV parse error:', error);
+          toast.error('Failed to parse CSV file. Please check the file format.');
           reject(error);
         },
       });
@@ -350,9 +377,9 @@ export function useTransactions() {
   const getTotals = useCallback((startDate?: Date, endDate?: Date) => {
     const filtered = startDate && endDate
       ? transactions.filter(t => {
-          const date = parseISO(t.date);
-          return isWithinInterval(date, { start: startDate, end: endDate });
-        })
+        const date = parseISO(t.date);
+        return isWithinInterval(date, { start: startDate, end: endDate });
+      })
       : transactions;
 
     const income = filtered

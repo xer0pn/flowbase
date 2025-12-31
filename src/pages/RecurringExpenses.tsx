@@ -47,11 +47,15 @@ const RecurringExpenses = () => {
         toast.success(`${t('recurring.autoRecordedExpense').replace('(s)', generated > 1 ? 's' : '')}`);
       }
     }
-  }, [isLoading, checkAndGenerateTransactions, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
-  const handleAddExpense = (expense: Parameters<typeof addExpense>[0]) => {
-    addExpense(expense);
-    toast.success(t('recurring.expenseAdded'));
+  const handleAddExpense = async (expense: Parameters<typeof addExpense>[0]) => {
+    const result = await addExpense(expense);
+    if (result) {
+      toast.success(t('recurring.expenseAdded'));
+    }
+    // Error toast is already shown by the hook
   };
 
   const handleUpdate = (id: string, updates: Parameters<typeof updateExpense>[1]) => {

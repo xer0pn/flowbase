@@ -31,16 +31,16 @@ interface RecurringExpenseFormProps {
 
 const expenseCategories = DEFAULT_CATEGORIES.filter(c => c.type === 'expense');
 
-export function RecurringExpenseForm({ 
-  onSubmit, 
-  editingExpense, 
+export function RecurringExpenseForm({
+  onSubmit,
+  editingExpense,
   onClose,
   isOpen,
-  onOpenChange 
+  onOpenChange
 }: RecurringExpenseFormProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(editingExpense?.name || '');
-  const [categoryId, setCategoryId] = useState(editingExpense?.categoryId || '');
+  const [categoryName, setCategoryName] = useState(editingExpense?.categoryId || '');
   const [amount, setAmount] = useState(editingExpense?.amount?.toString() || '');
   const [frequency, setFrequency] = useState<RecurringFrequency>(editingExpense?.frequency || 'monthly');
   const [dayOfMonth, setDayOfMonth] = useState(editingExpense?.dayOfMonth?.toString() || '1');
@@ -54,7 +54,7 @@ export function RecurringExpenseForm({
   const resetForm = () => {
     if (!editingExpense) {
       setName('');
-      setCategoryId('');
+      setCategoryName('');
       setAmount('');
       setFrequency('monthly');
       setDayOfMonth('1');
@@ -65,12 +65,12 @@ export function RecurringExpenseForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name || !categoryId || !amount) return;
+
+    if (!name || !categoryName || !amount) return;
 
     onSubmit({
       name,
-      categoryId,
+      categoryId: null, // Set to null since we're using DEFAULT_CATEGORIES without DB UUIDs
       amount: parseFloat(amount),
       frequency,
       dayOfMonth: parseInt(dayOfMonth),
@@ -100,13 +100,13 @@ export function RecurringExpenseForm({
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select value={categoryId} onValueChange={setCategoryId} required>
+        <Select value={categoryName} onValueChange={setCategoryName} required>
           <SelectTrigger>
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
             {expenseCategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
+              <SelectItem key={cat.id} value={cat.name}>
                 {cat.name}
               </SelectItem>
             ))}

@@ -13,6 +13,7 @@ import { Category, TransactionType, ActivityType } from '@/types/finance';
 import { Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 interface TransactionFormProps {
   categories: Category[];
@@ -39,14 +40,49 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!category || !amount) return;
+
+    // Validate required fields
+    if (!category) {
+      toast.error(t('transactions.selectCategory'));
+      return;
+    }
+
+    if (!amount || amount.trim() === '') {
+      toast.error(t('transactions.enterAmount'));
+      return;
+    }
+
+    // Parse and validate amount
+    const parsedAmount = parseFloat(amount);
+
+    if (isNaN(parsedAmount)) {
+      toast.error('Please enter a valid number for the amount');
+      return;
+    }
+
+    if (parsedAmount <= 0) {
+      toast.error('Amount must be greater than zero');
+      return;
+    }
+
+    if (parsedAmount > 999999999.99) {
+      toast.error('Amount exceeds maximum allowed value (999,999,999.99)');
+      return;
+    }
+
+    // Validate date
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      toast.error('Please enter a valid date');
+      return;
+    }
 
     onSubmit({
       date,
       type,
       category,
       description,
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       activityType,
     });
 
@@ -60,7 +96,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
   return (
     <form onSubmit={handleSubmit} className="border-2 border-border p-6 shadow-sm">
       <h3 className="text-lg font-bold mb-4 uppercase tracking-wide">{t('transactions.addTransaction')}</h3>
-      
+
       <div className="grid gap-4">
         {/* Type Toggle */}
         <div className="flex gap-0">

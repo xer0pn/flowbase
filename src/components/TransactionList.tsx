@@ -5,7 +5,6 @@ import { Trash2, ArrowUpRight, ArrowDownRight, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { EditTransactionDialog } from './EditTransactionDialog';
-import { ReceiptUpload } from './ReceiptUpload';
 import { useTranslation } from 'react-i18next';
 
 interface TransactionListProps {
@@ -13,10 +12,9 @@ interface TransactionListProps {
   categories: Category[];
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Transaction>) => void;
-  onReceiptUpdate?: (id: string, receiptUrl: string | null) => void;
 }
 
-export function TransactionList({ transactions, categories, onDelete, onUpdate, onReceiptUpdate }: TransactionListProps) {
+export function TransactionList({ transactions, categories, onDelete, onUpdate }: TransactionListProps) {
   const { t } = useTranslation();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -84,13 +82,6 @@ export function TransactionList({ transactions, categories, onDelete, onUpdate, 
               >
                 {formatAmount(transaction.amount, transaction.type)}
               </span>
-              <div onClick={(e) => e.stopPropagation()}>
-                <ReceiptUpload
-                  transactionId={transaction.id}
-                  currentReceiptUrl={transaction.receiptUrl}
-                  onUploadComplete={(url) => onReceiptUpdate?.(transaction.id, url)}
-                />
-              </div>
               <Button
                 variant="ghost"
                 size="icon"

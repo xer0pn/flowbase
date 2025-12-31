@@ -110,7 +110,7 @@ export type RecurringFrequency = 'weekly' | 'bi-weekly' | 'monthly';
 export interface RecurringIncome {
   id: string;
   name: string;
-  categoryId: string;
+  categoryId: string | null;
   amount: number;
   frequency: RecurringFrequency;
   dayOfMonth: number;
@@ -126,7 +126,7 @@ export interface RecurringIncome {
 export interface RecurringExpense {
   id: string;
   name: string;
-  categoryId: string;
+  categoryId: string | null;
   amount: number;
   frequency: RecurringFrequency;
   dayOfMonth: number;

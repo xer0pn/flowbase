@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { RecurringIncome, RecurringFrequency, Transaction, ActivityType } from '@/types/finance';
 import { format, parseISO, isBefore } from 'date-fns';
+import { toast } from 'sonner';
 
 interface UseRecurringIncomeOptions {
   onTransactionCreate?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
@@ -37,10 +38,16 @@ export function useRecurringIncome(options?: UseRecurringIncomeOptions) {
       frequency: source.frequency, day_of_month: source.dayOfMonth, is_active: source.isActive,
       activity_type: source.activityType, notes: source.notes,
     }]).select().single();
-    if (error) { console.error('Error:', error); return null; }
-    const newSource: RecurringIncome = { id: data.id, name: data.name, categoryId: data.category_id, amount: Number(data.amount),
+    if (error) {
+      console.error('Error adding recurring income:', error);
+      toast.error(`Failed to add income source: ${error.message}`);
+      return null;
+    }
+    const newSource: RecurringIncome = {
+      id: data.id, name: data.name, categoryId: data.category_id, amount: Number(data.amount),
       frequency: data.frequency as RecurringFrequency, dayOfMonth: data.day_of_month, isActive: data.is_active,
-      activityType: data.activity_type as ActivityType, notes: data.notes, createdAt: data.created_at, updatedAt: data.updated_at };
+      activityType: data.activity_type as ActivityType, notes: data.notes, createdAt: data.created_at, updatedAt: data.updated_at
+    };
     setSources(prev => [...prev, newSource]);
     return newSource;
   }, [user]);
@@ -74,13 +81,94 @@ export function useRecurringIncome(options?: UseRecurringIncomeOptions) {
     if (!options?.onTransactionCreate) return false;
     const source = sources.find(s => s.id === id);
     if (!source) return false;
-    options.onTransactionCreate({ date: format(new Date(), 'yyyy-MM-dd'), type: 'income', category: source.categoryId,
-      description: `${source.name} (manual)`, amount: source.amount, activityType: source.activityType || 'operating' });
+    options.onTransactionCreate({
+      date: format(new Date(), 'yyyy-MM-dd'), type: 'income', category: source.categoryId,
+      description: `${source.name} (manual)`, amount: source.amount, activityType: source.activityType || 'operating'
+    });
     updateSource(id, { lastGeneratedDate: new Date().toISOString() });
     return true;
   }, [sources, options, updateSource]);
 
-  const checkAndGenerateTransactions = useCallback(() => { return 0; }, []);
+  const checkAndGenerateTransactions = useCallback(() => {
+    if (!options?.onTransactionCreate) return 0;
+
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const currentDay = today.getDate();
+
+    let generatedCount = 0;
+
+    sources.filter(s => s.isActive).forEach(source => {
+      let shouldGenerate = false;
+      let transactionDate = new Date();
+
+      // Parse last generated date
+      const lastGenerated = source.lastGeneratedDate ? new Date(source.lastGeneratedDate) : null;
+
+      if (source.frequency === 'monthly') {
+        // For monthly: check if we're past the day_of_month and haven't generated this month
+        const targetDay = Math.min(source.dayOfMonth, new Date(currentYear, currentMonth + 1, 0).getDate());
+
+        if (currentDay >= targetDay) {
+          // Check if we haven't generated this month yet
+          if (!lastGenerated ||
+            lastGenerated.getMonth() !== currentMonth ||
+            lastGenerated.getFullYear() !== currentYear) {
+            shouldGenerate = true;
+            transactionDate = new Date(currentYear, currentMonth, targetDay);
+          }
+        }
+      } else if (source.frequency === 'bi-weekly') {
+        // For bi-weekly: check if 14 days have passed since last generation
+        if (lastGenerated) {
+          const daysSinceLastGen = Math.floor((today.getTime() - lastGenerated.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysSinceLastGen >= 14) {
+            shouldGenerate = true;
+            transactionDate = today;
+          }
+        } else {
+          // First time - generate if we're past the day of month
+          if (currentDay >= source.dayOfMonth) {
+            shouldGenerate = true;
+            transactionDate = new Date(currentYear, currentMonth, Math.min(source.dayOfMonth, new Date(currentYear, currentMonth + 1, 0).getDate()));
+          }
+        }
+      } else if (source.frequency === 'weekly') {
+        // For weekly: check if 7 days have passed since last generation
+        if (lastGenerated) {
+          const daysSinceLastGen = Math.floor((today.getTime() - lastGenerated.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysSinceLastGen >= 7) {
+            shouldGenerate = true;
+            transactionDate = today;
+          }
+        } else {
+          // First time - generate if we're past the day of month
+          if (currentDay >= source.dayOfMonth) {
+            shouldGenerate = true;
+            transactionDate = new Date(currentYear, currentMonth, Math.min(source.dayOfMonth, new Date(currentYear, currentMonth + 1, 0).getDate()));
+          }
+        }
+      }
+
+      if (shouldGenerate) {
+        options.onTransactionCreate({
+          date: format(transactionDate, 'yyyy-MM-dd'),
+          type: 'income',
+          category: source.categoryId || 'other-income',
+          description: `${source.name} (auto-generated)`,
+          amount: source.amount,
+          activityType: source.activityType || 'operating',
+        });
+
+        // Update last generated date
+        updateSource(source.id, { lastGeneratedDate: new Date().toISOString() });
+        generatedCount++;
+      }
+    });
+
+    return generatedCount;
+  }, [sources, options, updateSource]);
   const getTotalExpectedMonthly = useCallback(() => sources.filter(s => s.isActive).reduce((sum, s) => {
     if (s.frequency === 'weekly') return sum + s.amount * 4;
     if (s.frequency === 'bi-weekly') return sum + s.amount * 2;

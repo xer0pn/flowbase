@@ -4,28 +4,22 @@ import { PortfolioForm } from '@/components/PortfolioForm';
 import { PortfolioList } from '@/components/PortfolioList';
 import { PortfolioWidget } from '@/components/PortfolioWidget';
 import { Button } from '@/components/ui/button';
-import { Download, RefreshCw, Loader2 } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow } from 'date-fns';
 
 const Portfolio = () => {
   const { t } = useTranslation();
   const {
     holdings,
-    prices,
     isLoading,
-    isFetchingPrices,
-    lastUpdated,
     error,
     addHolding,
     deleteHolding,
-    refreshPrices,
     exportToCSV,
-    getPortfolioSummary,
-    getHoldingWithPrice,
   } = usePortfolio();
 
-  const summary = getPortfolioSummary();
+  // Calculate total cost
+  const totalCost = holdings.reduce((sum, h) => sum + (h.quantity * h.purchasePrice), 0);
 
   const handleAddHolding = (holding: Parameters<typeof addHolding>[0]) => {
     addHolding(holding);
@@ -35,15 +29,6 @@ const Portfolio = () => {
   const handleDelete = (id: string) => {
     deleteHolding(id);
     toast.success(t('common.holdingRemoved'));
-  };
-
-  const handleRefresh = async () => {
-    await refreshPrices();
-    if (error) {
-      toast.error(error);
-    } else {
-      toast.success(t('common.pricesUpdated'));
-    }
   };
 
   if (isLoading) {
@@ -67,24 +52,6 @@ const Portfolio = () => {
             <p className="text-muted-foreground mt-1">{t('portfolio.subtitle')}</p>
           </div>
           <div className="flex items-center gap-3">
-            {lastUpdated && (
-              <span className="text-sm text-muted-foreground">
-                {t('common.updated')} {formatDistanceToNow(lastUpdated, { addSuffix: true })}
-              </span>
-            )}
-            <Button 
-              onClick={handleRefresh} 
-              variant="outline" 
-              className="border-2"
-              disabled={isFetchingPrices || holdings.length === 0}
-            >
-              {isFetchingPrices ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              {t('common.refreshPrices')}
-            </Button>
             <Button onClick={exportToCSV} variant="outline" className="border-2">
               <Download className="h-4 w-4 mr-2" />
               {t('common.exportCSV')}
@@ -105,11 +72,7 @@ const Portfolio = () => {
           <div className="space-y-6">
             <PortfolioForm onSubmit={handleAddHolding} />
             <PortfolioWidget
-              totalValue={summary.totalValue}
-              totalGain={summary.totalGain}
-              totalGainPercent={summary.totalGainPercent}
-              bestPerformer={summary.bestPerformer}
-              worstPerformer={summary.worstPerformer}
+              totalCost={totalCost}
               holdingsCount={holdings.length}
             />
           </div>
@@ -124,9 +87,7 @@ const Portfolio = () => {
             </div>
             <PortfolioList
               holdings={holdings}
-              prices={prices}
               onDelete={handleDelete}
-              getHoldingWithPrice={getHoldingWithPrice}
             />
           </div>
         </div>

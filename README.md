@@ -1,73 +1,221 @@
-# Welcome to your Lovable project
+<div align="center">
+  <img src="public/logo.png" alt="FlowBase Logo" width="120" height="120">
+  
+  # FlowBase
+  
+  ### Personal Finance Tracker
+  
+  Track your finances, manage budgets, and monitor investments - all in one place.
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+  [![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?logo=react)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+  
+</div>
 
-## Project info
+---
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 📸 Screenshots
 
-## How can I edit this code?
+<!-- PLACEHOLDER: Add your screenshots here -->
 
-There are several ways of editing your application.
+### Dashboard
+![Dashboard Screenshot](./screenshots/dashboard.png)
+*Your financial overview at a glance*
 
-**Use Lovable**
+### Transactions
+![Transactions Screenshot](./screenshots/transactions.png)
+*Track all your income and expenses*
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Portfolio
+![Portfolio Screenshot](./screenshots/portfolio.png)
+*Monitor your investment holdings*
 
-Changes made via Lovable will be committed automatically to this repo.
+### Budget Tracking
+![Budget Screenshot](./screenshots/budget.png)
+*Set and track your spending limits*
 
-**Use your preferred IDE**
+### Theme Customization
+![Theme Screenshot](./screenshots/themes.png)
+*Customize your experience with multiple themes*
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## ✨ Features
 
-Follow these steps:
+### 💰 Financial Management
+- **Transaction Tracking** - Record income and expenses with detailed categories
+- **Recurring Transactions** - Automate tracking of regular payments and income
+- **Budget Management** - Set spending limits and track progress by category
+- **Multi-Currency Support** - Track finances in multiple currencies
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 📊 Investment Tracking
+- **Portfolio Management** - Track stocks and cryptocurrency holdings
+- **Holdings Overview** - Monitor quantity, purchase price, and total cost
+- **Export Functionality** - Download your portfolio data as CSV
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 📈 Financial Insights
+- **Dashboard Analytics** - Visual overview of your financial health
+- **Monthly Summaries** - Track income, expenses, and net balance
+- **Spending Charts** - Visualize expenses by category
+- **Cash Flow Analysis** - Monitor money in and money out
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 🎨 Customization
+- **Theme Support** - Light, dark, and system themes
+- **Color Customization** - Personalize with 5 preset themes or custom colors
+- **Multi-Language** - Support for English, Arabic, Spanish, French, German, and Chinese
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### 🔒 Security & Privacy
+- **Secure Authentication** - Email/password login with Supabase Auth
+- **Row Level Security** - Your data is protected with RLS policies
+- **Password Reset** - Secure password recovery flow
+- **Data Privacy** - Your financial data stays private and secure
+
+---
+
+## 🚀 Tech Stack
+
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Build Tool**: Vite
+- **Charts**: Recharts
+- **Internationalization**: i18next
+- **Deployment**: Vercel
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Supabase account ([sign up here](https://supabase.com))
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/xeropn/flowbase.git
+   cd flowbase
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Set up the database**
+   
+   Run the SQL schema in your Supabase project:
+   ```bash
+   # Copy the contents of database_schema.sql
+   # Paste into Supabase SQL Editor and run
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   
+   Navigate to `http://localhost:5173`
+
+---
+
+## 📁 Project Structure
+
+```
+flowbase/
+├── public/              # Static assets
+│   └── logo.png        # App logo
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── hooks/          # Custom React hooks
+│   ├── pages/          # Page components
+│   ├── i18n/           # Internationalization
+│   ├── integrations/   # Supabase integration
+│   └── types/          # TypeScript types
+├── supabase/           # Supabase configuration
+├── database_schema.sql # Database schema
+└── README.md
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🌐 Deployment
 
-**Use GitHub Codespaces**
+### Deploy to Vercel
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/flowbase)
 
-## What technologies are used for this project?
+1. Click the button above
+2. Add environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Deploy!
 
-This project is built with:
+### Manual Deployment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+# Build for production
+npm run build
 
-## How can I deploy this project?
+# Preview production build
+npm run preview
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+See [deployment_checklist.md](./deployment_checklist.md) for detailed deployment instructions.
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 🤝 Contributing
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://reactjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Backend powered by [Supabase](https://supabase.com/)
+- Deployed on [Vercel](https://vercel.com/)
+
+---
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+<div align="center">
+  Made with ❤️ by the FlowBase team
+  
+  ⭐ Star this repo if you find it helpful!
+</div>

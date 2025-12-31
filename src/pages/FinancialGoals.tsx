@@ -19,7 +19,7 @@ export default function FinancialGoals() {
   // Calculate average monthly savings rate from last 3 months
   const monthlySavingsRate = useMemo(() => {
     const threeMonthsAgo = subMonths(new Date(), 3);
-    const recentTransactions = transactions.filter((t) => 
+    const recentTransactions = transactions.filter((t) =>
       isAfter(new Date(t.date), threeMonthsAgo)
     );
 
@@ -43,8 +43,8 @@ export default function FinancialGoals() {
 
   const totalTargetAmount = activeGoals.reduce((sum, g) => sum + g.target_amount, 0);
   const totalCurrentAmount = activeGoals.reduce((sum, g) => sum + g.current_amount, 0);
-  const overallProgress = totalTargetAmount > 0 
-    ? (totalCurrentAmount / totalTargetAmount) * 100 
+  const overallProgress = totalTargetAmount > 0
+    ? (totalCurrentAmount / totalTargetAmount) * 100
     : 0;
 
   const handleCreateGoal = async (input: Parameters<typeof createGoal>[0]) => {
@@ -81,15 +81,14 @@ export default function FinancialGoals() {
     if (result.error) {
       toast({ title: t('common.error'), description: result.error, variant: 'destructive' });
     } else {
-      toast({ title: t('common.fundsAdded'), description: `SAR ${amount.toFixed(2)} ${t('common.addedToGoal')}` });
+      toast({ title: t('common.fundsAdded'), description: `${amount.toFixed(2)} ${t('common.addedToGoal')}` });
     }
     return result;
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
