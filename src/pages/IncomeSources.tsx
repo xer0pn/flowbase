@@ -92,12 +92,12 @@ const IncomeSources = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('nav.incomeSources')}</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{t('nav.incomeSources')}</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t('recurring.manageIncomeStreams')}
           </p>
         </div>
@@ -105,7 +105,7 @@ const IncomeSources = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('recurring.expectedMonthly')}</CardTitle>

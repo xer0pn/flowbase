@@ -152,21 +152,21 @@ const Index = () => {
   return (
     <div className="bg-background min-h-screen">
       {/* Page Header */}
-      <div className="container px-4 sm:px-6 lg:px-8 py-4 md:py-6 border-b-2 border-border">
-        <div className="flex items-center justify-between gap-4">
+      <div className="container px-3 sm:px-6 lg:px-8 py-3 md:py-6 border-b-2 border-border">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">{t('dashboard.title')}</h1>
-            <p className="text-sm text-muted-foreground mt-1 hidden sm:block">{t('dashboard.subtitle')}</p>
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">{t('dashboard.title')}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 hidden sm:block">{t('dashboard.subtitle')}</p>
           </div>
-          <div className="border-2 border-border px-2 sm:px-4 py-1.5 sm:py-2 font-mono text-xs sm:text-sm flex-shrink-0">
-            {new Date().toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
+          <div className="border-2 border-border px-1.5 sm:px-4 py-1 sm:py-2 font-mono text-[10px] sm:text-sm flex-shrink-0">
+            {new Date().toLocaleDateString(i18n.language, { month: 'short', year: 'numeric' })}
           </div>
         </div>
       </div>
 
-      <div className="container px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <div className="container px-3 sm:px-6 lg:px-8 py-3 md:py-8">
         {/* Stats Grid */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8">
           <StatCard
             title={dateRange ? t('dashboard.filteredIncome') : t('dashboard.allTimeIncome')}
             value={formatCurrency(filteredTotals.income)}
@@ -196,9 +196,9 @@ const Index = () => {
         </section>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
           {/* Left Column - Form, Filter & CSV */}
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-3 md:space-y-6">
             <TransactionForm
               categories={categories}
               onSubmit={handleAddTransaction}
@@ -221,21 +221,21 @@ const Index = () => {
           </div>
 
           {/* Middle Column - Charts */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="lg:col-span-2 space-y-3 md:space-y-6">
             <IncomeGrowthTracker
               transactions={transactions}
               categories={categories}
             />
-            
+
             <BudgetProgress
               budgets={budgets}
               transactions={transactions}
               categories={categories}
             />
-            
+
             <CashFlowChart data={monthlyData} />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
               <CategoryBreakdown
                 data={filteredExpenseBreakdown}
                 title={t('dashboard.expenseBreakdown')}

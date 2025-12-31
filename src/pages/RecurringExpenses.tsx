@@ -97,7 +97,7 @@ const RecurringExpenses = () => {
   return (
     <div className="bg-background">
       {/* Page Header */}
-      <div className="container py-6 border-b-2 border-border hidden lg:block">
+      <div className="container px-3 sm:px-6 py-4 sm:py-6 border-b-2 border-border hidden lg:block">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{t('nav.recurringExpenses')}</h1>
@@ -107,12 +107,12 @@ const RecurringExpenses = () => {
         </div>
       </div>
 
-      <div className="container py-8">
+      <div className="container px-3 sm:px-6 py-4 sm:py-8">
         {/* Mobile Header */}
-        <div className="lg:hidden mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="lg:hidden mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('nav.recurringExpenses')}</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{t('nav.recurringExpenses')}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {t('recurring.manageBillsSubscriptions')}
             </p>
           </div>
@@ -120,7 +120,7 @@ const RecurringExpenses = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('recurring.expectedMonthly')}</CardTitle>

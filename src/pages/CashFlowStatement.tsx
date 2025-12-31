@@ -65,7 +65,7 @@ const CashFlowStatement = () => {
           {netFlow >= 0 ? '+' : ''}{formatCurrency(netFlow)}
         </span>
       </div>
-      
+
       {txs.length === 0 ? (
         <div className="text-center py-6 border border-dashed border-border">
           <p className="text-muted-foreground text-sm">{emptyTip}</p>
@@ -107,26 +107,26 @@ const CashFlowStatement = () => {
   );
 
   return (
-    <div className="container py-8">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 border-2 border-border">
-          <TrendingUp className="h-6 w-6" />
+    <div className="container px-3 sm:px-6 py-4 sm:py-8">
+      <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+        <div className="p-2 sm:p-3 border-2 border-border">
+          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('cashFlowStatement.title')}</h1>
-          <p className="text-muted-foreground">{format(now, 'MMMM yyyy')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('cashFlowStatement.title')}</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">{format(now, 'MMMM yyyy')}</p>
         </div>
       </div>
 
       {/* Summary */}
-      <div className={`border-2 p-6 shadow-md mb-8 ${totalFlow >= 0 ? 'border-income bg-income/5' : 'border-expense bg-expense/5'}`}>
+      <div className={`border-2 p-4 sm:p-6 shadow-md mb-6 sm:mb-8 ${totalFlow >= 0 ? 'border-income bg-income/5' : 'border-expense bg-expense/5'}`}>
         <div className="flex justify-between items-center">
-          <span className="text-xl font-bold uppercase">{t('cashFlowStatement.netCashFlow')}</span>
-          <span className={`font-mono text-2xl font-bold ${totalFlow >= 0 ? 'text-income' : 'text-expense'}`}>
+          <span className="text-base sm:text-xl font-bold uppercase">{t('cashFlowStatement.netCashFlow')}</span>
+          <span className={`font-mono text-xl sm:text-2xl font-bold ${totalFlow >= 0 ? 'text-income' : 'text-expense'}`}>
             {totalFlow >= 0 ? '+' : ''}{formatCurrency(totalFlow)}
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-border/50">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-border/50">
           <div>
             <p className="text-xs text-muted-foreground uppercase flex items-center gap-1">
               <Wallet className="h-3 w-3" /> {t('cashFlowStatement.operating')}
@@ -154,24 +154,24 @@ const CashFlowStatement = () => {
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-8">
         {renderTransactionList(
-          operating, 
-          t('cashFlowStatement.operatingActivities'), 
+          operating,
+          t('cashFlowStatement.operatingActivities'),
           operatingFlow,
           <Wallet className="h-5 w-5" />,
           t('cashFlowStatement.operatingTip')
         )}
         {renderTransactionList(
-          investing, 
-          t('cashFlowStatement.investingActivities'), 
+          investing,
+          t('cashFlowStatement.investingActivities'),
           investingFlow,
           <TrendingDown className="h-5 w-5" />,
           t('cashFlowStatement.investingTip')
         )}
         {renderTransactionList(
-          financing, 
-          t('cashFlowStatement.financingActivities'), 
+          financing,
+          t('cashFlowStatement.financingActivities'),
           financingFlow,
           <CreditCard className="h-5 w-5" />,
           t('cashFlowStatement.financingTip')
